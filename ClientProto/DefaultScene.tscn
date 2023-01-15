@@ -1,0 +1,107 @@
+[gd_scene load_steps=10 format=3 uid="uid://chkce80kniyxx"]
+
+[ext_resource type="PackedScene" path="res://Networking/NetworkEventHandler.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://Prefabs/Dev/1x1Cube.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://c8t44ryxewlpm" path="res://Player/PlayerPawn.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://bfuj81lqirbrw" path="res://Prefabs/Terrain/Terrain.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://ddo6g75jtesqw" path="res://Prefabs/Terrain/Rocks/DesertRockTerrace.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://dy2n1vi60yg62" path="res://Prefabs/Buildings/Lobby/LobbyGeometryScene.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://Prefabs/Objects/ObjectiveBoard.tscn" id="7"]
+[ext_resource type="Script" path="res://global.gd" id="8"]
+
+[sub_resource type="Environment" id="1"]
+background_mode = 3
+background_color = Color(0.12549, 0.560784, 0.74902, 1)
+sky_custom_fov = 74.0
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.1
+
+[node name="Root" type="WorldEnvironment"]
+environment = SubResource("1")
+script = ExtResource("8")
+
+[node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.933517, -0.358029, 0.0190319, 0.02789, 0.0195934, -0.999419, 0.357448, 0.933505, 0.0282762, -1.64079, 15.2468, 1.12044)
+light_color = Color(0.901961, 0.92549, 1, 1)
+light_energy = 0.477
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.999172, -0.0266321, 0.0307634, -0.0317649, -0.0380343, 0.998771, -0.0254293, -0.998921, -0.0388488, 0, 14.1371, 0)
+light_color = Color(1, 0.909804, 0.831373, 1)
+
+[node name="NetworkEventHandler" parent="." instance=ExtResource("1")]
+
+[node name="StaticBody3D" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.537915, -0.00526297, -8.29133)
+
+[node name="StaticBody3" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.15712, -0.00526297, -8.83242)
+
+[node name="StaticBody4" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.06526, -0.012006, -3.38148)
+
+[node name="StaticBody5" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.06526, 0.00824904, -6.10886)
+
+[node name="StaticBody6" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.06526, 0.0181201, -4.68413)
+
+[node name="StaticBody7" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1216, 0.01059, -7.83512)
+
+[node name="PlayerPawn" parent="." instance=ExtResource("3")]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, -45.218, -1.90735e-06, 41.4809)
+
+[node name="Node3D" parent="." instance=ExtResource("4")]
+transform = Transform3D(400, 0, 0, 0, 1, 0, 0, 0, 400, 0, -1, 0)
+
+[node name="DesertRockTerrace" parent="." instance=ExtResource("5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.4974, 5.09871, -5.20384)
+
+[node name="DesertRockTerrace13" parent="." instance=ExtResource("5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -56.7782, 5.09871, 34.1007)
+
+[node name="DesertRockTerrace14" parent="." instance=ExtResource("5")]
+transform = Transform3D(-0.98585, 0, -0.167629, 0, 1, 0, 0.167629, 0, -0.98585, -37.0634, 5.09871, 54.8959)
+
+[node name="DesertRockTerrace15" parent="." instance=ExtResource("5")]
+transform = Transform3D(-0.0681751, 0, 0.48812, -0.116474, 0.478621, -0.0162678, -0.47402, -0.117605, -0.0662057, -24.5871, 3.41407, 47.889)
+
+[node name="DesertRockTerrace5" parent="." instance=ExtResource("5")]
+transform = Transform3D(0.442509, 0, -1.7564, 0, 1, 0, 0.896764, 0, 0.866695, 15.5662, 5.09871, 21.5133)
+
+[node name="DesertRockTerrace6" parent="." instance=ExtResource("5")]
+transform = Transform3D(-0.439245, -0.263267, 0.866721, -0.119867, 0.964723, 0.236523, -0.788615, 0, -0.5187, 24.501, 2.6795, 8.04315)
+
+[node name="DesertRockTerrace7" parent="." instance=ExtResource("5")]
+transform = Transform3D(0.341044, 0.00411122, -0.253834, 0.0145587, 0.191829, 0.0178334, 0.390244, -0.0107494, 0.221166, -1.1298, 8.05738, 15.3934)
+
+[node name="DesertRockTerrace8" parent="." instance=ExtResource("5")]
+transform = Transform3D(-0.430475, 0, -0.405492, 0, 0.192174, 0, 0.11378, 0, -0.583954, -9.09432, 7.78604, 5.39133)
+
+[node name="DesertRockTerrace9" parent="." instance=ExtResource("5")]
+transform = Transform3D(0.227245, 0, 0.343964, 0, 0.585513, 0, -0.265965, 0, 0.293889, -7.34853, 5.79082, 10.0648)
+
+[node name="DesertRockTerrace2" parent="." instance=ExtResource("5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.1343, 1.33789, -14.4823)
+
+[node name="DesertRockTerrace12" parent="." instance=ExtResource("5")]
+transform = Transform3D(0.360023, 0.0736429, 0.114355, -0.185649, 0.182453, 0, -0.189676, -0.0387984, 0.217057, -20.3776, 7.31197, -13.064)
+
+[node name="DesertRockTerrace3" parent="." instance=ExtResource("5")]
+transform = Transform3D(0.994601, 0.103367, 0.00914191, -0.10377, 0.990734, 0.0876218, 0, -0.0880974, 0.996112, -3.43633, -0.636879, -20.7379)
+
+[node name="DesertRockTerrace10" parent="." instance=ExtResource("5")]
+transform = Transform3D(0.128483, -0.0740063, 0.988947, -0.10377, 0.990734, 0.0876218, -0.986268, -0.113881, 0.119612, 24.8284, -0.636875, -10.3627)
+
+[node name="DesertRockTerrace4" parent="." instance=ExtResource("5")]
+transform = Transform3D(0.682053, 0.111339, -0.0185751, -0.113451, 0.517349, -0.0210906, 0.0137459, 0.031219, 0.691855, 7.53803, -0.643054, -27.1092)
+
+[node name="DesertRockTerrace11" parent="." instance=ExtResource("5")]
+transform = Transform3D(-0.360911, -0.0624255, -0.553427, -0.0867574, 0.522149, 0.00888382, 0.340021, 0.0669672, -0.585161, 17.9569, -0.159408, -25.043)
+
+[node name="ObjectiveBoard" parent="." instance=ExtResource("7")]
+transform = Transform3D(0.128865, 0, 0.991662, 0, 1, 0, -0.991662, 0, 0.128865, -45.8331, 2.35276, 33.0304)
+
+[node name="Lobby" parent="." instance=ExtResource("6")]
+transform = Transform3D(0.554452, 0, -0.832215, 0, 1, 0, 0.832215, 0, 0.554452, -25.3467, -0.5, 24.1989)

@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Player/Remote/RemotePlayerInstance.gd" type="Script" id=1]
+[ext_resource path="res://Player/Visuals/RoboPlayerAnimated.glb" type="PackedScene" id=2]
+[ext_resource path="res://Player/Visuals/SM_Rifle.glb" type="PackedScene" id=4]
+
+[sub_resource type="CapsuleShape3D" id=1]
+
+[sub_resource type="CapsuleMesh" id=2]
+
+[node name="RemotePlayerInstance" type="CharacterBody3D"]
+transform = Transform3D( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0 )
+script = ExtResource( 1 )
+
+[node name="SK_AnimatedMesh" parent="." instance=ExtResource( 2 )]
+transform = Transform3D( 0.06, 0, 0, 0, 0.06, 0, 0, 0, 0.06, 0, 0.8, 0 )
+
+[node name="SM_GunMesh" parent="SK_AnimatedMesh" instance=ExtResource( 4 )]
+transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D( 0.25, 0, 0, 0, -1.09278e-08, -0.5, 0, 0.25, -2.18557e-08, 0, 0.75, 0 )
+shape = SubResource( 1 )
+
+[node name="PlayerMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D( 0.25, 0, 0, 0, -1.09278e-08, -0.5, 0, 0.25, -2.18557e-08, 0, 0.75, 0 )
+visible = false
+mesh = SubResource( 2 )
+material/0 = null
+
+[node name="PlayerCamera" type="Node3D" parent="."]
+transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0 )
+
+[node name="PlayerRayCast" type="Node3D" parent="PlayerCamera"]

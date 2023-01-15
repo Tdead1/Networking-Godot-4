@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Player/Logic/CameraLogic.gd" type="Script" id=1]
+
+[node name="Camera3D" type="Camera3D"]
+script = ExtResource( 1 )
