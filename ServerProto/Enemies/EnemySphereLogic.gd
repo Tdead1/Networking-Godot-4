@@ -1,4 +1,4 @@
-extends KinematicBody
+extends CharacterBody3D
 
 # Extremely good ai logic
 var mySpawnLocation := Vector2(0,0);
@@ -8,12 +8,12 @@ var myIsNotMovingTimer := float(0.0);
 var myFrameVelocity := float(0.0);
 var myLastFramePosition := Vector3(0,0,0);
 var myIsMoving := bool(false);
-export var myHealth := float(100);
-export var mySpeed := float(4.0);
+@export var myHealth := float(100);
+@export var mySpeed := float(4.0);
 
 func _ready():
-	rand_seed(0);
-	myDestination = mySpawnLocation + Vector2(rand_range(-10.0, 10.0), rand_range(-10.0, 10.0));
+	#rand_seed(0);
+	myDestination = mySpawnLocation + Vector2(randf_range(-10.0, 10.0), randf_range(-10.0, 10.0));
 	return;
 	
 func _process(delta):
@@ -22,8 +22,8 @@ func _process(delta):
 		myIsNotMovingTimer = 0.0;
 	
 	if (myRandomTimer <= 0.0):
-		myDestination = Vector2(rand_range(-10.0, 10.0), rand_range(-10.0, 10.0));
-		myRandomTimer = rand_range(4.0, 20.0);
+		myDestination = Vector2(randf_range(-10.0, 10.0), randf_range(-10.0, 10.0));
+		myRandomTimer = randf_range(4.0, 20.0);
 	
 	if (myRandomTimer < 4.0):
 		myDestination = Vector2(transform.origin.x, transform.origin.y);
@@ -34,7 +34,9 @@ func _process(delta):
 
 func _physics_process(delta):
 	var direction = (myDestination - Vector2(transform.origin.x, transform.origin.y)).normalized();
-	move_and_slide(Vector3(direction.x * mySpeed, -9.8, direction.y * mySpeed), Vector3.UP);
+	set_velocity(Vector3(direction.x * mySpeed, -9.8, direction.y * mySpeed))
+	set_up_direction(Vector3.UP)
+	move_and_slide();
 	myFrameVelocity = (myLastFramePosition - transform.origin).length();
 	myIsMoving = myFrameVelocity > 0.5;
 	myIsNotMovingTimer = myIsNotMovingTimer + delta if !myIsMoving else 0.0;

@@ -3,9 +3,9 @@
 [ext_resource path="res://Prefabs/Materials/MM_RedBasic.tres" type="Material" id=1]
 [ext_resource path="res://Prefabs/Enemies/EnemySphereLogic.gd" type="Script" id=2]
 
-[node name="EnemySphere" type="Spatial"]
+[node name="EnemySphere" type="Node3D"]
 script = ExtResource( 2 )
 
-[node name="CSGSphere" type="CSGSphere" parent="."]
+[node name="CSGSphere3D" type="CSGSphere3D" parent="."]
 material_override = ExtResource( 1 )
 radius = 0.5

@@ -1,7 +1,7 @@
-extends Spatial
+extends Node3D
 var hit_object;
 
-puppet func FireGun(pathToObject, playerID):
+@rpc func FireGun(pathToObject, playerID):
 	print(String(pathToObject) + " was shot by Player#" + String(playerID));
 	if (has_node(pathToObject)):
 		hit_object = get_node(pathToObject);	

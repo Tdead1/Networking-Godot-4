@@ -1,4 +1,4 @@
-extends Spatial
+extends Node3D
 
 var id = "";
 var myHealth = 100.0;
@@ -10,7 +10,7 @@ func _ready():
 	myCamera = get_node("PlayerCamera");
 	return;
 
-puppet func UpdatePlayerTransform(aPlayerTransform, aCameraTransform):
+@rpc func UpdatePlayerTransform(aPlayerTransform, aCameraTransform):
 	transform = aPlayerTransform;
 	myCameraTransform = aCameraTransform;
 	#get_parent().debuglog += "Received player transfrom! \n";

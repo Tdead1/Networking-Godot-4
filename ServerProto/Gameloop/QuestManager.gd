@@ -1,8 +1,8 @@
 extends Node
 
-onready var myRayCast = get_node("RayCast");
+@onready var myRayCast = get_node("RayCast3D");
 var myEnemiesByQuest = {};
-onready var myServer = get_parent();
+@onready var myServer = get_parent();
 
 func LocationToWorldPosition(location):
 	myRayCast.global_transform.origin.x = location.x;
@@ -27,7 +27,7 @@ func OnEnemyKilled(id):
 		var enemyCount = enemyArray.size();
 		for i in enemyCount:
 			if (enemyArray[enemyCount - (i + 1)] == id):
-				enemyArray.remove(enemyCount - (i + 1));
+				enemyArray.remove_at(enemyCount - (i + 1));
 	return;
 
 func VerifyCompletion(player):
@@ -44,7 +44,7 @@ func VerifyCompletion(player):
 		Quest.Type.GoTo:
 			 shouldSubmitObjective = distance < 5.0 && player.myObjective.myState == Quest.ObjectiveState.Active;
 		Quest.Type.Kill:
-			shouldSubmitObjective = distance < 5.0 && player.myObjective.myState == Quest.ObjectiveState.Active && myEnemiesByQuest[player.myObjective.get_instance_id()].empty();
+			shouldSubmitObjective = distance < 5.0 && player.myObjective.myState == Quest.ObjectiveState.Active && myEnemiesByQuest[player.myObjective.get_instance_id()].is_empty();
 			
 	if (shouldSubmitObjective):
 		myServer.myNetworkEventHandler.GiveObjectiveReward(player.id);
