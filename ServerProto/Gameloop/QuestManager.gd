@@ -42,7 +42,7 @@ func VerifyCompletion(player):
 	var shouldSubmitObjective = false;
 	match player.myObjective.myType:
 		Quest.Type.GoTo:
-			 shouldSubmitObjective = distance < 5.0 && player.myObjective.myState == Quest.ObjectiveState.Active;
+			shouldSubmitObjective = distance < 5.0 && player.myObjective.myState == Quest.ObjectiveState.Active;
 		Quest.Type.Kill:
 			shouldSubmitObjective = distance < 5.0 && player.myObjective.myState == Quest.ObjectiveState.Active && myEnemiesByQuest[player.myObjective.get_instance_id()].is_empty();
 			

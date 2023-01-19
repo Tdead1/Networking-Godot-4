@@ -1,9 +1,9 @@
 extends Node
 
 # Replication variables:
-#var myServerAdress = "127.0.0.1";
-#@onready var myNetwork;
-#var myConnectionStatus = MultiplayerPeer.CONNECTION_CONNECTING;
+var myServerAdress = "127.0.0.1";
+@onready var myNetwork = ENetMultiplayerPeer.new();
+var myConnectionStatus = MultiplayerPeer.CONNECTION_CONNECTING;
 
 const myReplyTimeout = 5.0;
 var myConnectTimer = 0.0;
@@ -18,48 +18,52 @@ var myLocalPlayer : CharacterBody3D;
 var myID = 0;
 
 func _ready():
-	#if (get_tree().multiplayer.connect("peer_packet",Callable(self,"_on_packet_received")) != OK):
-	#	print("Connecting network traffic function failed in event handler!");	
-	#myNetwork = ENetMultiplayerPeer.new();
-	#set_multiplayer_authority(1);
+	if (myNetwork.create_client("localhost", 4242) != OK):
+		print("Connecting network traffic function failed in event handler!");	
+	
+	multiplayer.set_multiplayer_peer(myNetwork);
+	
 	myLocalPlayer = get_parent().get_node("PlayerPawn");
 	print("Creating client.");
 	AttemptConnect();
 	return;
 
 func _process(delta):
-	#var newConnectionStatus = myNetwork.get_connection_status();
-	#match (myConnectionStatus):
-	#	MultiplayerPeer.CONNECTION_DISCONNECTED:
-	#		myConnectTimer += delta;
-	#		if (myConnectTimer > myReplyTimeout):
-	#			newConnectionStatus = MultiplayerPeer.CONNECTION_CONNECTING;
-	#	MultiplayerPeer.CONNECTION_CONNECTING:
-	#		myConnectTimer += delta;
-	#		if (myConnectTimer > myReplyTimeout):
-	#			newConnectionStatus = MultiplayerPeer.CONNECTION_DISCONNECTED;
-	#		continue;
-	#	MultiplayerPeer.CONNECTION_CONNECTED:
-	#		continue;
+	var newConnectionStatus = myNetwork.get_connection_status();
+	match (myConnectionStatus):
+		MultiplayerPeer.CONNECTION_DISCONNECTED:
+			myConnectTimer += delta;
+			if (myConnectTimer > myReplyTimeout):
+				newConnectionStatus = MultiplayerPeer.CONNECTION_CONNECTING;
+		MultiplayerPeer.CONNECTION_CONNECTING:
+			myConnectTimer += delta;
+			if (myConnectTimer > myReplyTimeout):
+				newConnectionStatus = MultiplayerPeer.CONNECTION_DISCONNECTED;
+			continue;
+		MultiplayerPeer.CONNECTION_CONNECTED:
+			continue;
 	
-	#if (myConnectionStatus == newConnectionStatus):
-	#	return;
+	if (myConnectionStatus == newConnectionStatus):
+		return;
 	
-	#myConnectTimer = 0.0;
-	#match(newConnectionStatus):
-	#	MultiplayerPeer.CONNECTION_DISCONNECTED:
-	#		if (myConnectionStatus == MultiplayerPeer.CONNECTION_CONNECTING):
-	#			print("Connection timed out.");
-	#		else:
-	#			print("Server has shut down.");
-	#		Disconnect();
-	#	MultiplayerPeer.CONNECTION_CONNECTING:
-	#		AttemptConnect();
-	#	MultiplayerPeer.CONNECTION_CONNECTED:
-	#		ConnectionSuccess();
-	#print("Connection status changed from: " + String(myConnectionStatus) + " to " + String(newConnectionStatus));
-	#myConnectionStatus = newConnectionStatus;
-		
+	myConnectTimer = 0.0;
+	match(newConnectionStatus):
+		MultiplayerPeer.CONNECTION_DISCONNECTED:
+			if (myConnectionStatus == MultiplayerPeer.CONNECTION_CONNECTING):
+				print("Connection timed out.");
+			else:
+				print("Server has shut down.");
+			Disconnect();
+		MultiplayerPeer.CONNECTION_CONNECTING:
+			AttemptConnect();
+		MultiplayerPeer.CONNECTION_CONNECTED:
+			ConnectionSuccess();
+	
+	myConnectionStatus = newConnectionStatus;
+	#var oldConnectionStatusName = MultiplayerPeer.ConnectionStatus.keys()[myConnectionStatus];
+	#var newConnectionStatusName = MultiplayerPeer.ConnectionStatus.keys()[newConnectionStatus];
+	#print("Connection status changed from: " + oldConnectionStatusName + " to " + newConnectionStatusName);
+	
 	return;
 
 func Disconnect():
@@ -80,17 +84,16 @@ func Disconnect():
 	return;
 
 func AttemptConnect():
-	#myNetwork = ENetMultiplayerPeer.new();
-	#print("Attempting to connect.");
-	#myNetwork.create_client(myServerAdress, 4242); 
-	#get_tree().set_multiplayer_peer(myNetwork);
-	#myLocalPlayer.name = "Player#" + str(get_tree().multiplayer.get_unique_id());
+	myNetwork = ENetMultiplayerPeer.new();
+	print("Attempting to connect.");
+	myNetwork.create_client("localhost", 4242); 
+	myLocalPlayer.name = "Player#" + str(multiplayer.get_unique_id());
 	return;
 
 func ConnectionSuccess():
-	#print("Connected to server.");
-	#print(str(get_tree().get_peers().size()));
-	#myID = get_tree().multiplayer.get_unique_id();
+	print("Connected to server.");
+	print(str(get_tree().get_peers().size()));
+	myID = multiplayer.get_unique_id();
 	return;
 
 @rpc func CreatePlayer(id):

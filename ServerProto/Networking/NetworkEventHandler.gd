@@ -15,10 +15,10 @@ func _ready():
 	return;
 
 func ConnectPeer(id):	
-	#for existingID in myPlayers:
-	#	rpc_id(existingID, "CreatePlayer", id);
-		
-	#rpc_id(id, "CreatePlayers", myPlayers.keys());
+	for existingID in myPlayers:
+		multiplayer.rpc(existingID, id, "CreatePlayer");
+	
+	multiplayer.rpc(id, Object(myPlayers.keys()), "CreatePlayers");
 	CreatePlayer(id);
 	return;
 
@@ -41,7 +41,7 @@ func _physics_process(_delta):
 			pass;
 	return;
 
-@rpc func CreatePlayer(id):
+func CreatePlayer(id):
 	myServer.myDebugLog += "Users now online: " + str(get_tree().get_peers().size());
 	myServer.myDebugLog += "   -> User connected.      ID: " + str(id) + "\n";
 	var newPlayer = myPlayertemplate.instantiate();
@@ -55,7 +55,8 @@ func _physics_process(_delta):
 		pass;
 	return;
 
-@rpc func RemovePlayer(id):
+@rpc
+func RemovePlayer(id):
 	var oldPlayer = get_node("/root/Root/Player#" + str(id));
 	myServer.myDebugLog += "Users now online: " + str(get_tree().get_peers().size()) ;
 	myServer.myDebugLog += "   -> User disconnected. ID: " + str(id) + "\n";
@@ -63,7 +64,8 @@ func _physics_process(_delta):
 	oldPlayer.queue_free();
 	return;
 
-@rpc func CreateSphereEnemy(position = Vector3(0,0,0)):
+@rpc 
+func CreateSphereEnemy(position = Vector3(0,0,0)):
 	var newEnemy = mySphereEnemyTemplate.instantiate();
 	var id = newEnemy.get_instance_id();
 	myServer.call_deferred("add_child", newEnemy);
@@ -78,7 +80,8 @@ func _physics_process(_delta):
 		pass;
 	return id;
 
-@rpc func KillSphereEnemy(id):
+@rpc 
+func KillSphereEnemy(id):
 	for playerID in myPlayers:
 		#rpc_unreliable_id(playerID, "KillSphereEnemy", id);
 		pass;
@@ -111,7 +114,8 @@ func GiveObjectiveReward(id):
 	return;
 
 # Received requests from Clients
-@rpc(any_peer) func RequestObjective(id):
+@rpc(any_peer) 
+func RequestObjective(id):
 	var player = myPlayers.get(id);
 	if (player == null):
 		return;
@@ -123,7 +127,8 @@ func GiveObjectiveReward(id):
 	CreateObjective(id);
 	return;
 
-@rpc(any_peer) func SubmitObjectiveCompletion(id):
+@rpc(any_peer) 
+func SubmitObjectiveCompletion(id):
 	var player = myPlayers.get(id);
 	if (player == null):
 		return;
