@@ -9,20 +9,23 @@ var mySphereEnemyTemplate = preload("res://Enemies/EnemySphere.tscn");
 @onready var myServer = get_parent();  
 
 func _ready():
-	#CreateSphereEnemy();
-	#CreateSphereEnemy();	
+	CreateSphereEnemy();
+	CreateSphereEnemy();	
 	return;
-
+	
+@rpc func ReceiveCreateAllPlayers(_connectedPlayerKeysString): return;
+@rpc func ReceiveCreatePlayer(_id): return;
 func ConnectPeer(id):
 	var connectedPlayerKeysString = "";
 	for connectedPlayerID in myPlayers:
-		rpc_id(connectedPlayerID, "CreatePlayer", id);
+		rpc_id(connectedPlayerID, "ReceiveCreatePlayer", id);
 		connectedPlayerKeysString += str(connectedPlayerID) + "_";
 	
-	rpc_id(id, "CreatePlayers", connectedPlayerKeysString, );
+	rpc_id(id, "ReceiveCreateAllPlayers", connectedPlayerKeysString);
 	CreatePlayer(id);
 	return;
 
+@rpc func ReceiveRemovePlayer(_id): return;
 func DisconnectPeer(id):
 	for connectedPlayerID in myPlayers:
 		if (connectedPlayerID == id):
@@ -32,19 +35,20 @@ func DisconnectPeer(id):
 	RemovePlayer(id);
 	return;
 
+@rpc func ReceiveUpdateRemotePlayer(_dataPlayerID, _transform, _cameraTransform): return;
+@rpc func ReceiveUpdateSphereEnemy(_enemyID, _transform): return;
 func _physics_process(_delta):
 	for contactPlayerID in myPlayers:
 		for dataPlayerID in myPlayers:
-			#rpc_unreliable_id(contactPlayerID, "UpdateRemotePlayer", dataPlayerID, myPlayers[dataPlayerID].transform, myPlayers[dataPlayerID].myCameraTransform);
+			rpc_id(contactPlayerID, "ReceiveUpdateRemotePlayer", dataPlayerID, myPlayers[dataPlayerID].transform, myPlayers[dataPlayerID].myCameraTransform);
 			pass;
 		for enemyID in myEnemies:
-			#rpc_unreliable_id(contactPlayerID, "UpdateSphereEnemy", enemyID, myEnemies[enemyID].transform);
+			rpc_id(contactPlayerID, "ReceiveUpdateSphereEnemy", enemyID, myEnemies[enemyID].transform);
 			pass;
 	return;
 
+@rpc func ReceiveCreateSphereEnemy(_enemyID): return;
 func CreatePlayer(id):
-	myServer.myDebugLog += "Users now online: " + str(get_tree().get_multiplayer().get_peers().size());
-	myServer.myDebugLog += "   -> User connected.      ID: " + str(id) + "\n";
 	var newPlayer = myPlayertemplate.instantiate();
 	newPlayer.set_name("Player#" + str(id));
 	newPlayer.set_multiplayer_authority(id);
@@ -52,11 +56,13 @@ func CreatePlayer(id):
 	myPlayers[id] = newPlayer;
 	newPlayer.id = id;
 	for enemyID in myEnemies:
-		#rpc_unreliable_id(id, "CreateSphereEnemy", enemyID);
+		rpc_id(id, "ReceiveCreateSphereEnemy", enemyID);
 		pass;
+	
+	myServer.myDebugLog += "Users now online: " + str(myPlayers.size());
+	myServer.myDebugLog += "   -> User connected.      ID: " + str(id) + "\n";
 	return;
 
-@rpc
 func RemovePlayer(id):
 	var oldPlayer = get_node("/root/Root/Player#" + str(id));
 	myServer.myDebugLog += "Users now online: " + str(get_tree().get_multiplayer().get_peers().size()) ;
@@ -65,7 +71,6 @@ func RemovePlayer(id):
 	oldPlayer.queue_free();
 	return;
 
-@rpc 
 func CreateSphereEnemy(position = Vector3(0,0,0)):
 	var newEnemy = mySphereEnemyTemplate.instantiate();
 	var id = newEnemy.get_instance_id();
@@ -81,11 +86,9 @@ func CreateSphereEnemy(position = Vector3(0,0,0)):
 		pass;
 	return id;
 
-@rpc 
+@rpc func ReceiveSphereEnemyKill(_id): return;
 func KillSphereEnemy(id):
-	for playerID in myPlayers:
-		#rpc_unreliable_id(playerID, "KillSphereEnemy", id);
-		pass;
+	rpc("ReceiveSphereEnemyKill", id);
 	myServer.myQuestManager.OnEnemyKilled(id);
 	myServer.remove_child(myEnemies[id]);
 	myEnemies[id].queue_free();
@@ -93,6 +96,7 @@ func KillSphereEnemy(id):
 	print("Server Enemy destroyed, sending to clients.");
 	return;
 
+@rpc func ReceiveObjective(_id): return;
 func CreateObjective(id):
 	var player = myPlayers[id];
 	var newQuest = Quest.new();
@@ -107,6 +111,7 @@ func CreateObjective(id):
 	rpc_id(id, "ReceiveObjective", newQuest.myState, newQuest.myType, newQuest.myName, newQuest.myLocation);
 	return;
 
+@rpc func ReceiveObjectiveRewards(_id): return;
 func GiveObjectiveReward(id):
 	var player = myServer.myNetworkEventHandler.myPlayers.get(id);
 	myServer.myDebugLog += "Player completed objective and has been sent a reward. \n";
@@ -114,9 +119,9 @@ func GiveObjectiveReward(id):
 	rpc_id(id, "ReceiveObjectiveRewards");
 	return;
 
-# Received requests from Clients
+# Received requests from Clients ("Requests")
 @rpc("any_peer")
-func RequestObjective(id):
+func RequestObjectiveStart(id):
 	var player = myPlayers.get(id);
 	if (player == null):
 		return;
@@ -129,7 +134,7 @@ func RequestObjective(id):
 	return;
 
 @rpc("any_peer")
-func SubmitObjectiveCompletion(id):
+func RequestObjectiveCompletion(id):
 	var player = myPlayers.get(id);
 	if (player == null):
 		return;

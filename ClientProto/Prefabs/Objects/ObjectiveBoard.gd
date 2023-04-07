@@ -18,7 +18,7 @@ func _process(delta):
 	var distance = (myLocalPlayer.myObjective.myLocation - Vector2(myLocalPlayer.transform.origin.x, myLocalPlayer.transform.origin.z)).length();
 	var shouldSubmitObjective = distance < 5.0 && myLocalPlayer.myObjective.myState == Quest.ObjectiveState.Active;
 	if (shouldSubmitObjective):
-		myLocalPlayer.myNetworkEventHandler.SubmitObjectiveCompletion();
+		myLocalPlayer.myNetworkEventHandler.SendObjectiveCompletion();
 	
 	if (myLocalPlayer.myObjective.myState == Quest.ObjectiveState.Submitted):
 		myQuestSubmitTimer += delta;
@@ -55,5 +55,5 @@ func RequestObjective():
 	
 	print("Requesting objective from server...");
 	myObjectiveRequestState = ObjectiveRequestState.Requested;
-	myLocalPlayer.myNetworkEventHandler.RequestObjective();
+	myLocalPlayer.myNetworkEventHandler.SendObjectiveRequest();
 	return;

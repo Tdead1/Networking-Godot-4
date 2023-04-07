@@ -44,7 +44,7 @@ func _physics_process(delta):
 	myLastFramePosition = transform.origin;
 	return;
 
-func GetDamage(attackerID, damageAmount):
+func GetDamage(_attackerID, damageAmount):
 	myHealth -= damageAmount;
 	if (myHealth < 0):
 		get_parent().get_node("NetworkEventHandler").KillSphereEnemy(get_instance_id());

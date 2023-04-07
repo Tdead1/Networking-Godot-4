@@ -1,18 +1,18 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://48ybkhg4ov5p"]
 
-[ext_resource path="res://Player/PlayerPawn.gd" type="Script" id=1]
-[ext_resource path="res://Player/PlayerCamera.gd" type="Script" id=2]
-[ext_resource path="res://Player/PlayerShooting.gd" type="Script" id=3]
-[ext_resource path="res://Player/PlayerMesh.gd" type="Script" id=4]
+[ext_resource type="Script" path="res://Player/PlayerPawn.gd" id="1"]
+[ext_resource type="Script" path="res://Player/PlayerCamera.gd" id="2"]
+[ext_resource type="Script" path="res://Player/PlayerShooting.gd" id="3"]
+[ext_resource type="Script" path="res://Player/PlayerMesh.gd" id="4"]
 
 [node name="PlayerPawn" type="Marker3D"]
-script = ExtResource( 1 )
+script = ExtResource("1")
 
 [node name="PlayerCamera" type="Node3D" parent="."]
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="PlayerRayCast" type="Node3D" parent="PlayerCamera"]
-script = ExtResource( 3 )
+script = ExtResource("3")
 
 [node name="PlayerMesh" type="Node3D" parent="."]
-script = ExtResource( 4 )
+script = ExtResource("4")

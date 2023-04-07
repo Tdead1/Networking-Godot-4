@@ -23,10 +23,7 @@ func _ready():
 	call_deferred("add_child", myQuestManager);
 	
 	myDebugLog += "Server running checked port 4242. \n";
-	#else:
-	#	myDebugLog += "Server setup failed!";
 	
-	
-	myNetwork.peer_connected.connect(myNetworkEventHandler.ConnectPeer);
-	myNetwork.peer_disconnected.connect(myNetworkEventHandler.DisconnectPeer);
+	get_tree().get_multiplayer().peer_connected.connect(myNetworkEventHandler.ConnectPeer);
+	get_tree().get_multiplayer().peer_disconnected.connect(myNetworkEventHandler.DisconnectPeer);
 	return;

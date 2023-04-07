@@ -1,5 +1,5 @@
-[gd_resource type="StandardMaterial3D" format=2]
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://csip3pc7vul50"]
 
 [resource]
-flags_transparent = true
-albedo_color = Color( 0, 0.788235, 1, 0.576471 )
+transparency = 1
+albedo_color = Color(0, 0.788235, 1, 0.576471)

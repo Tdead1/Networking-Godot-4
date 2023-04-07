@@ -25,7 +25,10 @@ func _ready():
 	return;
 
 func _process(delta):
-	var newConnectionStatus = myNetwork.get_connection_status();
+	var newConnectionStatus = MultiplayerPeer.CONNECTION_DISCONNECTED; 
+	if (myNetwork != null):
+		newConnectionStatus = myNetwork.get_connection_status();
+	
 	match (myConnectionStatus):
 		MultiplayerPeer.CONNECTION_DISCONNECTED:
 			myConnectTimer += delta;
@@ -60,20 +63,18 @@ func _process(delta):
 	return;
 
 func Disconnect():
-	#print("We have disconnected from the server.");
-	#for i in myRemotePlayers:
-	#	i.queue_free();
-	#myRemotePlayers = [];
-	#for i in myEnemies:
-	#	myEnemies[i].queue_free();
-	#myEnemies = {};
+	print("We have disconnected from the server.");
+	for i in myRemotePlayers:
+		i.queue_free();
+	myRemotePlayers = [];
+	for i in myEnemies:
+		myEnemies[i].queue_free();
+	myEnemies = {};
 	
-	#if (myObjectiveMarker):
-	#	myObjectiveMarker.queue_free();
-	#myLocalPlayer.myObjective = Quest.new();
-	
-	#myNetwork.close_connection();
-	#get_tree().set_multiplayer_peer(null);
+	if (myObjectiveMarker):
+		myObjectiveMarker.queue_free();
+	myLocalPlayer.myObjective = Quest.new();
+	myNetwork = null;
 	return;
 
 func AttemptConnect():
@@ -93,7 +94,7 @@ func ConnectionSuccess():
 	return;
 
 @rpc
-func CreatePlayer(id):
+func ReceiveCreatePlayer(id):
 	print("Create player was called from the server!"); 
 	if (id == get_tree().get_multiplayer().get_unique_id()):
 		return;
@@ -106,11 +107,12 @@ func CreatePlayer(id):
 	return;
 
 @rpc
-func CreatePlayers(idsString):
-	var idsAsStrings = idsString.Split("_");
+func ReceiveCreateAllPlayers(idsString):
+	print("Create players was called from the server!"); 
+	var idsAsStrings = idsString.split("_");
 	for idString in idsAsStrings:
 		var id = int(idString);
-		if(id == get_tree().get_unique_id()):
+		if(id == myID):
 			continue;
 		var remoteInstance = myRemotePlayerScene.instantiate();
 		get_parent().add_child(remoteInstance);
@@ -122,7 +124,7 @@ func CreatePlayers(idsString):
 	return;
 
 @rpc
-func RemovePlayer(id):
+func ReceiveRemovePlayer(id):
 	var oldplayer = get_parent().get_node("Player#" + str(id));
 	myRemotePlayers.erase(oldplayer);
 	oldplayer.queue_free();
@@ -130,12 +132,12 @@ func RemovePlayer(id):
 	return;
 
 @rpc
-func UpdateRemotePlayer(id, playertransform, cameratransform):
-	print("Received update message from server!");
-	if(id == get_tree().get_unique_id()):
+func ReceiveUpdateRemotePlayer(id, playertransform, cameratransform):
+	#print("Received update message from server!");
+	if (id == myID):
 		return;
 		
-	var remotePlayer = get_parent().get_node("Player#" + str(id));
+	var remotePlayer = get_parent().get_node_or_null("Player#" + str(id));
 	if(remotePlayer == null || playertransform == null || cameratransform == null):
 		return;
 	
@@ -154,7 +156,7 @@ func UpdateRemotePlayer(id, playertransform, cameratransform):
 	return;
 
 @rpc
-func CreateSphereEnemy(id):
+func ReceiveCreateSphereEnemy(id):
 	var newEnemy = mySphereEnemyTemplate.instantiate();
 	newEnemy.set_name("SphereEnemy" + str(id));
 	myEnemies[id] = newEnemy;
@@ -163,7 +165,7 @@ func CreateSphereEnemy(id):
 	return;
 
 @rpc
-func KillSphereEnemy(id):
+func ReceiveSphereEnemyKill(id):
 	get_parent().remove_child(myEnemies[id]);
 	myEnemies[id].queue_free();
 	myEnemies.erase(id);
@@ -183,16 +185,16 @@ func UpdateSphereEnemy(id, transform):
 	return;
 
 @rpc
-func ReceiveObjective(state, type, name, location):
+func ReceiveObjective(state, type, aname, location):
 	myLocalPlayer.myObjective.myState = state;
 	myLocalPlayer.myObjective.myType = type;
-	myLocalPlayer.myObjective.myName = name;
+	myLocalPlayer.myObjective.myName = aname;
 	myLocalPlayer.myObjective.myLocation = location;
 	myObjectiveMarker = myObjectiveMarkerTemplate.instantiate();
 	get_parent().add_child(myObjectiveMarker);
 	myObjectiveMarker.transform.origin.x = location.x;
 	myObjectiveMarker.transform.origin.z = location.y;
-	print("Received objective.");
+	print("Received objective confirmation.");
 	return;
 
 @rpc
@@ -204,16 +206,18 @@ func ReceiveObjectiveRewards():
 	return;
 
 # Requestable output events below.
-func RequestObjective():
+@rpc func RequestObjectiveStart(_anID): return;
+func SendObjectiveRequest():
 	if (myConnectionStatus == MultiplayerPeer.CONNECTION_CONNECTED):
 		print("Requested objective...");
-		rpc_id(1, "RequestObjective", get_tree().get_unique_id());
+		rpc_id(1, "RequestObjectiveStart", myID);
 	return;
 
-func SubmitObjectiveCompletion():
+@rpc func RequestObjectiveCompletion(_aParam, _anID): return;
+func SendObjectiveCompletion():
 	if (myConnectionStatus == MultiplayerPeer.CONNECTION_CONNECTED):
 		print("Requesting objective rewards...");
-		rpc_id(1, "SubmitObjectiveCompletion", get_tree().get_unique_id());
+		rpc_id(1, "RequestObjectiveCompletion", myID);
 		myLocalPlayer.myObjective.myState = Quest.ObjectiveState.Submitted;
 	return;
 
