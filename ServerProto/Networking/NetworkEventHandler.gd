@@ -11,22 +11,23 @@ var mySphereEnemyTemplate = preload("res://Enemies/EnemySphere.tscn");
 func _ready():
 	#CreateSphereEnemy();
 	#CreateSphereEnemy();	
-	#set_multiplayer_authority(1);
 	return;
 
-func ConnectPeer(id):	
-	for existingID in myPlayers:
-		multiplayer.rpc(existingID, id, "CreatePlayer");
+func ConnectPeer(id):
+	var connectedPlayerKeysString = "";
+	for connectedPlayerID in myPlayers:
+		rpc_id(connectedPlayerID, "CreatePlayer", id);
+		connectedPlayerKeysString += str(connectedPlayerID) + "_";
 	
-	multiplayer.rpc(id, Object(myPlayers.keys()), "CreatePlayers");
+	rpc_id(id, "CreatePlayers", connectedPlayerKeysString, );
 	CreatePlayer(id);
 	return;
 
 func DisconnectPeer(id):
-	for existingID in myPlayers:
-		if (existingID == id):
+	for connectedPlayerID in myPlayers:
+		if (connectedPlayerID == id):
 			continue;
-	#	rpc_id(existingID, "RemovePlayer", id);
+		rpc_id(connectedPlayerID, "RemovePlayer", id);
 	
 	RemovePlayer(id);
 	return;
@@ -42,7 +43,7 @@ func _physics_process(_delta):
 	return;
 
 func CreatePlayer(id):
-	myServer.myDebugLog += "Users now online: " + str(get_tree().get_peers().size());
+	myServer.myDebugLog += "Users now online: " + str(get_tree().get_multiplayer().get_peers().size());
 	myServer.myDebugLog += "   -> User connected.      ID: " + str(id) + "\n";
 	var newPlayer = myPlayertemplate.instantiate();
 	newPlayer.set_name("Player#" + str(id));
@@ -58,7 +59,7 @@ func CreatePlayer(id):
 @rpc
 func RemovePlayer(id):
 	var oldPlayer = get_node("/root/Root/Player#" + str(id));
-	myServer.myDebugLog += "Users now online: " + str(get_tree().get_peers().size()) ;
+	myServer.myDebugLog += "Users now online: " + str(get_tree().get_multiplayer().get_peers().size()) ;
 	myServer.myDebugLog += "   -> User disconnected. ID: " + str(id) + "\n";
 	myPlayers.erase(id);
 	oldPlayer.queue_free();
@@ -114,7 +115,7 @@ func GiveObjectiveReward(id):
 	return;
 
 # Received requests from Clients
-@rpc(any_peer) 
+@rpc("any_peer")
 func RequestObjective(id):
 	var player = myPlayers.get(id);
 	if (player == null):
@@ -127,7 +128,7 @@ func RequestObjective(id):
 	CreateObjective(id);
 	return;
 
-@rpc(any_peer) 
+@rpc("any_peer")
 func SubmitObjectiveCompletion(id):
 	var player = myPlayers.get(id);
 	if (player == null):
