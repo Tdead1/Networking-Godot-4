@@ -11,7 +11,8 @@ enum JumpStatus {
 @export var mySprintAcceleration = 200;
 @export var myMaxSpeed = 15;
 @export var myMaxSprintSpeed = 30;
-@export var myFriction = 3;
+@export var myFriction = 1.5;
+@export var myJumpStrength = 12;
 
 @onready var myCamera = get_node("PlayerCamera");
 @onready var myNetworkEventHandler = get_parent().get_node("NetworkEventHandler");
@@ -21,11 +22,12 @@ var myIsSprinting = false;
 var myMoveInput = Vector3(0,0,0);
 var myHealth = 100.0;
 var myVelocity = Vector3(0,0,0);
-var myGravity = 0.5;
+var myGravity = 0.8;
 var myJumpStatus = JumpStatus.Default;
 var myObjective = Quest.new();
 
 func _ready():
+	floor_max_angle = 1.1;
 	get_tree().current_scene.SetLocalPlayer(self); 
 	#set_multiplayer_authority(get_tree().get_unique_id());
 	return;
@@ -59,7 +61,7 @@ func _physics_process(_delta):
 	
 	var compensatedMoveInput = myMoveInput;
 	if(myJumpStatus == JumpStatus.HasInput):
-		myVelocity.y = 10;
+		myVelocity.y = myJumpStrength;
 	
 	if(!is_on_floor()):
 		myVelocity.y -= myGravity;
@@ -74,13 +76,11 @@ func _physics_process(_delta):
 	speedVector.z = compensatedSpeedVector.y;
 	speedVector.x /= myFriction; 
 	speedVector.z /= myFriction; 
-	# Offset to keep player grounded
-	speedVector.y -= 0.001;
 	
 	var up = Vector3(0,1,0);
-	set_velocity(speedVector)
-	set_up_direction(up)
-	move_and_slide()
+	set_velocity(speedVector);
+	set_up_direction(up);
+	move_and_slide();
 	myVelocity = velocity;
 	
 	# Post-Movement logic

@@ -1,2 +1,2 @@
-"D:\Program Files\Godot\Godot3.5.exe" RootScene.tscn
+"D:\Program Files\Godot\Godot4.0.2.exe" RootScene.tscn
 PAUSE

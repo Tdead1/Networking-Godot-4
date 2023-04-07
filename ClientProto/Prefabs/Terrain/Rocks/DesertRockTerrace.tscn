@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://chjwiwlbubhiq" path="res://Prefabs/Terrain/Rocks/SM_DesertTerrace.glb" id="1"]
 [ext_resource type="Material" path="res://Prefabs/Terrain/Rocks/M_DesertRock.tres" id="2"]
-[ext_resource type="Material" path="res://Prefabs/Terrain/Materials/M_Terrain.tres" id="3"]
+[ext_resource type="Material" uid="uid://cgtpbuvqoaxo1" path="res://Prefabs/Terrain/Materials/M_Terrain.tres" id="3"]
 
 [node name="DesertRockTerrace" instance=ExtResource("1")]
 

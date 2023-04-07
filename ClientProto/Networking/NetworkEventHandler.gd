@@ -39,9 +39,8 @@ func _process(delta):
 			myConnectTimer += delta;
 			if (myConnectTimer > myReplyTimeout):
 				newConnectionStatus = MultiplayerPeer.CONNECTION_DISCONNECTED;
-			continue;
 		MultiplayerPeer.CONNECTION_CONNECTED:
-			continue;
+			pass;
 	
 	if (myConnectionStatus == newConnectionStatus):
 		return;
@@ -87,13 +86,13 @@ func AttemptConnect():
 	myNetwork = ENetMultiplayerPeer.new();
 	print("Attempting to connect.");
 	myNetwork.create_client("localhost", 4242); 
-	myLocalPlayer.name = "Player#" + str(multiplayer.get_unique_id());
 	return;
 
 func ConnectionSuccess():
 	print("Connected to server.");
 	print(str(get_tree().get_peers().size()));
 	myID = multiplayer.get_unique_id();
+	myLocalPlayer.name = "Player#" + myID;
 	return;
 
 @rpc func CreatePlayer(id):
