@@ -9,7 +9,7 @@ const myReplyTimeout = 5.0;
 var myConnectTimer = 0.0;
 
 var myRemotePlayerScene = preload("res://Player/Remote/RemotePlayerInstance.tscn");
-var mySphereEnemyTemplate = preload("res://Prefabs/Enemies/EnemySphere.tscn");
+var myEnemyCutterBotTemplate = preload("res://Prefabs/Enemies/EnemyCutterBot.tscn");
 var myObjectiveMarkerTemplate = preload("res://Prefabs/Objects/ObjectiveMarker.tscn");
 var myRemotePlayers = [];
 var myEnemies = {};
@@ -19,7 +19,7 @@ var myID = 0;
 
 func _ready():
 	myLocalPlayer = get_parent().get_node("PlayerPawn");
-	get_tree().get_multiplayer().connect("peer_packet", ReceivePeerPacket);
+	get_tree().get_multiplayer().connect("peer_packet", PeerPacket);
 	print("Creating client.");
 	AttemptConnect();
 	return;
@@ -93,8 +93,8 @@ func ConnectionSuccess():
 	myLocalPlayer.name = "Player#" + str(myID);
 	return;
 
-@rpc
-func ReceiveCreatePlayer(id):
+@rpc("authority")
+func ACreatePlayer(id):
 	print("Create player was called from the server!"); 
 	if (id == get_tree().get_multiplayer().get_unique_id()):
 		return;
@@ -106,8 +106,8 @@ func ReceiveCreatePlayer(id):
 	print(remoteInstance.name + " has joined!"); 
 	return;
 
-@rpc
-func ReceiveCreateAllPlayers(idsString):
+@rpc("authority")
+func BCreateAllPlayers(idsString):
 	print("Create players was called from the server!"); 
 	var idsAsStrings = idsString.split("_");
 	for idString in idsAsStrings:
@@ -123,17 +123,17 @@ func ReceiveCreateAllPlayers(idsString):
 	print("Other players loaded. Player amount: " + str(idsAsStrings.size()));
 	return;
 
-@rpc
-func ReceiveRemovePlayer(id):
+@rpc("authority")
+func CRemovePlayer(id):
 	var oldplayer = get_parent().get_node("Player#" + str(id));
 	myRemotePlayers.erase(oldplayer);
 	oldplayer.queue_free();
 	print ("Player#" + str(id) + " left, so we destroyed him.");
 	return;
 
-@rpc
-func ReceiveUpdateRemotePlayer(id, playertransform, cameratransform):
-	#print("Received update message from server!");
+@rpc("authority")
+func DUpdateRemotePlayer(id, playertransform, cameratransform):
+	#print("d update message from server!");
 	if (id == myID):
 		return;
 		
@@ -141,7 +141,7 @@ func ReceiveUpdateRemotePlayer(id, playertransform, cameratransform):
 	if(remotePlayer == null || playertransform == null || cameratransform == null):
 		return;
 	
-	print(playertransform.origin);
+	#print(playertransform.origin);
 	var cameraLookAtTransform = cameratransform;# cameratransform.rotated(playertransform.
 	var cameraForward = cameraLookAtTransform.basis.z;
 	cameraForward.y = 0;
@@ -149,43 +149,43 @@ func ReceiveUpdateRemotePlayer(id, playertransform, cameratransform):
 	var cameraPosition = playertransform.origin + cameratransform.origin;
 	var cameraLookAt = cameraPosition + cameraForward;
 	
-	print(cameraLookAtTransform);
+	#print(cameraLookAtTransform);
 	var skeletalMesh = remotePlayer.get_node("SK_AnimatedMesh/SM_Robot");
-	skeletalMesh.set_bone_pose(skeletalMesh.find_bone("Head"), cameratransform);
+	#skeletalMesh.set_bone_pose(skeletalMesh.find_bone("Head"), cameratransform);
 	remotePlayer.look_at_from_position(playertransform.origin, playertransform.origin + cameraLookAt - cameraPosition, Vector3(0,1,0));
 	return;
 
-@rpc
-func ReceiveCreateSphereEnemy(id):
-	var newEnemy = mySphereEnemyTemplate.instantiate();
-	newEnemy.set_name("SphereEnemy" + str(id));
+@rpc("authority")
+func ECreateEnemy(id):
+	var newEnemy = myEnemyCutterBotTemplate.instantiate();
+	newEnemy.set_name("Enemy" + str(id));
 	myEnemies[id] = newEnemy;
 	get_parent().add_child(newEnemy);
 	print ("Created enemy! ID: " + str(id));
 	return;
 
-@rpc
-func ReceiveSphereEnemyKill(id):
+@rpc("authority")
+func FEnemyKill(id):
 	get_parent().remove_child(myEnemies[id]);
 	myEnemies[id].queue_free();
 	myEnemies.erase(id);
 	print("Enemy destroyed! Maybe we will receive a reward?");
 	return;
 
-@rpc
-func UpdateSphereEnemy(id, transform):
+@rpc("authority")
+func GUpdateEnemy(id, transform):
 	# enemy might still be getting spawned in from the server.
 	if (!myEnemies.has(id)):
 		return;
 	
-	#print ("Sphere Enemy: Got update from server: " + str(id) + " " + str(transform));
-	myEnemies[id].transform = transform;
-	if (id == 1):
-		myEnemies[id].transform = myEnemies[id].transform.scaled(Vector3(0.5,0.5,0.5));
+	#print (" Enemy: Got update from server: " + str(id) + " " + str(transform));
+	myEnemies[id].position = transform.origin;
+	#if (id == 1):
+	#	myEnemies[id].transform = myEnemies[id].transform.scaled(Vector3(0.5,0.5,0.5));
 	return;
-
-@rpc
-func ReceiveObjective(state, type, aname, location):
+	
+@rpc("authority")
+func HReceiveObjective(state, type, aname, location):
 	myLocalPlayer.myObjective.myState = state;
 	myLocalPlayer.myObjective.myType = type;
 	myLocalPlayer.myObjective.myName = aname;
@@ -197,8 +197,8 @@ func ReceiveObjective(state, type, aname, location):
 	print("Received objective confirmation.");
 	return;
 
-@rpc
-func ReceiveObjectiveRewards():
+@rpc("authority")
+func IObjectiveRewards():
 	# Rewards go here.
 	myObjectiveMarker.queue_free();
 	myLocalPlayer.myObjective = Quest.new();
@@ -206,24 +206,28 @@ func ReceiveObjectiveRewards():
 	return;
 
 # Requestable output events below.
-@rpc func RequestObjectiveStart(_anID): return;
-func SendObjectiveRequest():
-	if (myConnectionStatus == MultiplayerPeer.CONNECTION_CONNECTED):
-		print("Requested objective...");
-		rpc_id(1, "RequestObjectiveStart", myID);
+func ZHandlebjectiveRequest():
 	return;
 
-@rpc func RequestObjectiveCompletion(_aParam, _anID): return;
+func YHandleObjectiveCompletion():
+	return;
+
+func SendObjectiveRequest():
+	if (myConnectionStatus == MultiplayerPeer.CONNECTION_CONNECTED):
+	#	rpc_id(1, "ZHandlebjectiveRequest");
+		print("Requested objective...");
+	return;
+
 func SendObjectiveCompletion():
 	if (myConnectionStatus == MultiplayerPeer.CONNECTION_CONNECTED):
 		print("Requesting objective rewards...");
-		rpc_id(1, "RequestObjectiveCompletion", myID);
+	#	rpc_id(1, "YHandleObjectiveCompletion");
 		myLocalPlayer.myObjective.myState = Quest.ObjectiveState.Submitted;
 	return;
 
 # Unspecified Package Handling:
-func ReceivePeerPacket(_id, packet):
+@rpc("authority")
+func PeerPacket(_id, packet):
 	var command = packet.get_string_from_ascii();
 	print(command);
 	return;
-

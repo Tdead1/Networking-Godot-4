@@ -50,7 +50,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.06526, -0.47248, -4.68413)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1216, -0.48001, -7.83512)
 
 [node name="PlayerPawn" parent="." instance=ExtResource("3")]
-transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, -45.218, -1.90735e-06, 41.4809)
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 6.08691, -1.90735e-06, 12.5919)
 
 [node name="Node3D" parent="." instance=ExtResource("4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
@@ -68,13 +68,13 @@ transform = Transform3D(-0.98585, 0, -0.167629, 0, 1, 0, 0.167629, 0, -0.98585, 
 transform = Transform3D(-0.0681751, 0, 0.48812, -0.116474, 0.478621, -0.0162678, -0.47402, -0.117605, -0.0662057, -24.5871, 3.41407, 47.889)
 
 [node name="DesertRockTerrace5" parent="." instance=ExtResource("5")]
-transform = Transform3D(0.442509, 0, -0.896764, 0, 1, 0, 0.896764, 0, 0.442509, 15.5662, 5.09871, 21.5133)
+transform = Transform3D(0.442509, 0, -0.896764, 0, 1, 0, 0.896764, 0, 0.442509, 49.2864, 5.09871, 58.6851)
 
 [node name="DesertRockTerrace6" parent="." instance=ExtResource("5")]
-transform = Transform3D(-0.482361, -0.263267, 0.835475, -0.131633, 0.964723, 0.227996, -0.866026, 2.38419e-07, -0.5, 24.501, 2.6795, 8.04315)
+transform = Transform3D(-0.482361, -0.263267, 0.835475, -0.131633, 0.964723, 0.227996, -0.866026, 2.38419e-07, -0.5, 58.2212, 2.6795, 45.215)
 
 [node name="DesertRockTerrace7" parent="." instance=ExtResource("5")]
-transform = Transform3D(0.657787, 0.0213932, -0.7529, 0.02808, 0.998205, 0.0528961, 0.752681, -0.0559358, 0.656005, -1.1298, 8.05738, 15.3934)
+transform = Transform3D(0.657787, 0.0213932, -0.7529, 0.02808, 0.998205, 0.0528961, 0.752681, -0.0559358, 0.656005, 32.5904, 8.05738, 52.5652)
 
 [node name="DesertRockTerrace8" parent="." instance=ExtResource("5")]
 transform = Transform3D(-0.126884, 0, -0.991918, 0, 1, 0, 0.991918, 0, -0.126884, -9.94929, -5.17171, 5.3934)

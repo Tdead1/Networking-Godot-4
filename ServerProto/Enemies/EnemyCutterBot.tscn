@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://m31kh0s0dnd4"]
+
+[ext_resource type="Script" path="res://Enemies/EnemyCutterBotLogic.gd" id="1_qa7bp"]
+
+[sub_resource type="SphereShape3D" id="1"]
+
+[node name="EnemyCutterBot" type="CharacterBody3D"]
+script = ExtResource("1_qa7bp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("1")

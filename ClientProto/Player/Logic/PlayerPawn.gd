@@ -29,7 +29,6 @@ var myObjective = Quest.new();
 func _ready():
 	floor_max_angle = 1.1;
 	get_tree().current_scene.SetLocalPlayer(self); 
-	#set_multiplayer_authority(get_tree().get_unique_id());
 	return;
 
 func _process(_delta):
@@ -55,6 +54,12 @@ func _process(_delta):
 	return;
 
 func _physics_process(_delta):
+	UpdatePlayerTransform();
+	if (myNetworkEventHandler.myConnectionStatus == MultiplayerPeer.CONNECTION_CONNECTED):
+		rpc_id(1, "UpdatePlayerTransform", transform, myCamera.transform); 
+
+@rpc("unreliable")
+func UpdatePlayerTransform():
 	# Pre-movement logic
 	var maxSpeed = myMaxSprintSpeed if myIsSprinting else myMaxSpeed;
 	var acceleration = mySprintAcceleration if myIsSprinting else myAcceleration;
@@ -91,7 +96,6 @@ func _physics_process(_delta):
 		myJumpStatus = JumpStatus.InAir;
 	
 	# Send the server all the information we need!
-	#if(myNetworkEventHandler.myConnectionStatus == MultiplayerPeer.CONNECTION_CONNECTED):
-	#	rpc_unreliable_id(1, "UpdatePlayerTransform", transform, myCamera.transform); 
+
 	
 	return;  
