@@ -14,9 +14,10 @@ enum JumpStatus {
 @export var myFriction = 1.5;
 @export var myJumpStrength = 12;
 
-@onready var myCamera = get_node("PlayerCamera");
+@onready var myCamera = $PlayerCamera;
+@onready var myCollisionShape = $PhysicsCollisionShape;
+@onready var myHUD = $PlayerCamera/HUD;
 @onready var myNetworkEventHandler = get_parent().get_node("NetworkEventHandler");
-@onready var myCollisionShape = get_node("PhysicsCollisionShape");
 
 var myIsSprinting = false;
 var myMoveInput = Vector3(0,0,0);

@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://chkce80kniyxx"]
 
 [ext_resource type="PackedScene" path="res://Networking/NetworkEventHandler.tscn" id="1"]
-[ext_resource type="PackedScene" path="res://Prefabs/Dev/1x1Cube.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://dxvyrk6p27rla" path="res://Prefabs/Dev/1x1Cube.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://c8t44ryxewlpm" path="res://Player/PlayerPawn.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://bfuj81lqirbrw" path="res://Prefabs/Terrain/Terrain.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://ddo6g75jtesqw" path="res://Prefabs/Terrain/Rocks/DesertRockTerrace.tscn" id="5"]

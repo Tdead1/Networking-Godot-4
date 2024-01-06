@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" path="res://Player/SubScenes/PlayerCamera.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://bjo1r8e0p8xm2" path="res://Player/Visuals/SM_Rifle.glb" id="4"]
 [ext_resource type="Script" path="res://Player/Logic/PlayerShooting.gd" id="5"]
-[ext_resource type="PackedScene" path="res://Player/UI/HUD.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://tke28ybd72we" path="res://Player/UI/HUD.tscn" id="6"]
 
 [sub_resource type="CapsuleShape3D" id="1"]
 margin = 0.001
@@ -28,13 +28,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.457184, 0)
 
 [node name="PlayerRayCast" type="RayCast3D" parent="PlayerCamera"]
 target_position = Vector3(0, 0, -1000)
+collision_mask = 2
 script = ExtResource("5")
 
 [node name="HUD" parent="PlayerCamera" instance=ExtResource("6")]
-layout_mode = 3
-anchors_preset = 15
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="PhysicsCollisionShape" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
