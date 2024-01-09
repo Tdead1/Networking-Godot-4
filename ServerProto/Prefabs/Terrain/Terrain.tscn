@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bfuj81lqirbrw"]
 
-[ext_resource type="Material" path="res://Prefabs/Terrain/Materials/M_Terrain.tres" id="1"]
+[ext_resource type="Material" uid="uid://cgtpbuvqoaxo1" path="res://Prefabs/Terrain/Materials/M_Terrain.tres" id="1"]
 
 [sub_resource type="HeightMapShape3D" id="HeightMapShape3D_gyu4v"]
 map_width = 120

@@ -1,9 +1,8 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=2]
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://yomr68fnyqjt"]
 
-[ext_resource path="res://Prefabs/Terrain/Rocks/T_DesertRock.png" type="Texture2D" id=1]
+[ext_resource type="Texture2D" uid="uid://3hp0ggwaga02" path="res://Prefabs/Terrain/Rocks/T_DesertRock.png" id="1_l7eln"]
 
 [resource]
-flags_world_triplanar = true
-albedo_texture = ExtResource( 1 )
-uv1_scale = Vector3( 0.2, 0.3, 0.3 )
+albedo_texture = ExtResource("1_l7eln")
+uv1_scale = Vector3(0.2, 0.3, 0.3)
 uv1_triplanar = true

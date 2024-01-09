@@ -17,6 +17,147 @@ var myObjectiveMarker : MeshInstance3D = null;
 var myLocalPlayer : CharacterBody3D;
 var myID = 0;
 
+# KEEP IN SYNC WITH NetworkEventHandler.gd ON THE SERVER PROJECT!
+# Order and function names need to be IDENTICAL!
+@rpc("authority")
+func RPC_CreatePlayer(id):
+	print("Create player was called from the server!"); 
+	if (id == get_tree().get_multiplayer().get_unique_id()):
+		return;
+	
+	var remoteInstance = myRemotePlayerScene.instantiate();
+	get_parent().add_child(remoteInstance);
+	myRemotePlayers.push_back(remoteInstance);
+	remoteInstance.name = "Player#" + str(id);
+	print(remoteInstance.name + " has joined!"); 
+	return;
+
+@rpc("authority")
+func RPC_CreateAllPlayers(idsString):
+	print("Create players was called from the server!"); 
+	var idsAsStrings = idsString.split("_");
+	for idString in idsAsStrings:
+		var id = int(idString);
+		if(id == myID):
+			continue;
+		var remoteInstance = myRemotePlayerScene.instantiate();
+		get_parent().add_child(remoteInstance);
+		myRemotePlayers.push_back(remoteInstance);
+		remoteInstance.name = "Player#" + str(id);
+		print("Created " + remoteInstance.name); 
+		
+	print("Other players loaded. Player amount: " + str(idsAsStrings.size()));
+	return;
+
+@rpc("authority")
+func RPC_RemovePlayer(id):
+	var oldplayer = get_parent().get_node("Player#" + str(id));
+	myRemotePlayers.erase(oldplayer);
+	oldplayer.queue_free();
+	print ("Player#" + str(id) + " left, so we destroyed him.");
+	return;
+
+@rpc("authority")
+func RPC_UpdateRemotePlayer(id, playertransform, cameratransform):
+	#print("d update message from server!");
+	if (id == myID):
+		return;
+		
+	var remotePlayer = get_parent().get_node_or_null("Player#" + str(id));
+	if(remotePlayer == null || playertransform == null || cameratransform == null):
+		return;
+	
+	#print(playertransform.origin);
+	var cameraLookAtTransform = cameratransform;# cameratransform.rotated(playertransform.
+	var cameraForward = cameraLookAtTransform.basis.z;
+	cameraForward.y = 0;
+	cameraForward = cameraForward.normalized();
+	var cameraPosition = playertransform.origin + cameratransform.origin;
+	var cameraLookAt = cameraPosition + cameraForward;
+	
+	#print(cameraLookAtTransform);
+	var skeletalMesh = remotePlayer.get_node("SK_AnimatedMesh/SM_Robot");
+	#skeletalMesh.set_bone_pose(skeletalMesh.find_bone("Head"), cameratransform);
+	remotePlayer.look_at_from_position(playertransform.origin, playertransform.origin + cameraLookAt - cameraPosition, Vector3(0,1,0));
+	return;
+
+@rpc("authority")
+func RPC_CreateEnemy(id):
+	var newEnemy = myEnemyCutterBotTemplate.instantiate();
+	newEnemy.set_name("Enemy" + str(id));
+	myEnemies[id] = newEnemy;
+	get_parent().add_child(newEnemy);
+	print ("Created enemy! ID: " + str(id));
+	return;
+
+@rpc("authority")
+func RPC_EnemyKill(id):
+	get_parent().remove_child(myEnemies[id]);
+	myEnemies[id].queue_free();
+	myEnemies.erase(id);
+	print("Enemy destroyed! Maybe we will receive a reward?");
+	return;
+
+@rpc("authority")
+func RPC_UpdateEnemy(id, transform):
+	# enemy might still be getting spawned in from the server.
+	if (!myEnemies.has(id)):
+		return;
+	
+	#print (" Enemy: Got update from server: " + str(id) + " " + str(transform));
+	myEnemies[id].position = transform.origin;
+	#if (id == 1):
+	#	myEnemies[id].transform = myEnemies[id].transform.scaled(Vector3(0.5,0.5,0.5));
+	return;
+	
+@rpc("authority")
+func RPC_ReceiveObjective(state, type, aname, location):
+	myLocalPlayer.myObjective.myState = state;
+	myLocalPlayer.myObjective.myType = type;
+	myLocalPlayer.myObjective.myName = aname;
+	myLocalPlayer.myObjective.myLocation = location;
+	myObjectiveMarker = myObjectiveMarkerTemplate.instantiate();
+	get_parent().add_child(myObjectiveMarker);
+	myObjectiveMarker.transform.origin.x = location.x;
+	myObjectiveMarker.transform.origin.z = location.y;
+	print("Received objective confirmation.");
+	return;
+
+@rpc("authority")
+func RPC_ObjectiveRewards():
+	# Rewards go here.
+	myObjectiveMarker.queue_free();
+	myLocalPlayer.myObjective = Quest.new();
+	print("Received reward, completed objective.");
+	return;
+
+# Requestable output events below.
+func RPC_HandlebjectiveRequest():
+	return;
+
+func RPC_HandleObjectiveCompletion():
+	return;
+
+func SendObjectiveRequest():
+	if (myConnectionStatus == MultiplayerPeer.CONNECTION_CONNECTED):
+	#	rpc_id(1, "RPC_HandlebjectiveRequest");
+		print("Requested objective...");
+	return;
+
+func SendObjectiveCompletion():
+	if (myConnectionStatus == MultiplayerPeer.CONNECTION_CONNECTED):
+		print("Requesting objective rewards...");
+	#	rpc_id(1, "RPC_HandleObjectiveCompletion");
+		myLocalPlayer.myObjective.myState = Quest.ObjectiveState.Submitted;
+	return;
+
+# Unspecified Package Handling:
+@rpc("authority")
+func PeerPacket(_id, packet):
+	var command = packet.get_string_from_ascii();
+	print(command);
+	return;
+
 func _ready():
 	myLocalPlayer = get_parent().get_node("PlayerPawn");
 	get_tree().get_multiplayer().connect("peer_packet", PeerPacket);
@@ -91,143 +232,4 @@ func ConnectionSuccess():
 	print(str(get_tree().get_multiplayer().get_peers().size()));
 	myID = multiplayer.get_unique_id();
 	myLocalPlayer.name = "Player#" + str(myID);
-	return;
-
-@rpc("authority")
-func ACreatePlayer(id):
-	print("Create player was called from the server!"); 
-	if (id == get_tree().get_multiplayer().get_unique_id()):
-		return;
-	
-	var remoteInstance = myRemotePlayerScene.instantiate();
-	get_parent().add_child(remoteInstance);
-	myRemotePlayers.push_back(remoteInstance);
-	remoteInstance.name = "Player#" + str(id);
-	print(remoteInstance.name + " has joined!"); 
-	return;
-
-@rpc("authority")
-func BCreateAllPlayers(idsString):
-	print("Create players was called from the server!"); 
-	var idsAsStrings = idsString.split("_");
-	for idString in idsAsStrings:
-		var id = int(idString);
-		if(id == myID):
-			continue;
-		var remoteInstance = myRemotePlayerScene.instantiate();
-		get_parent().add_child(remoteInstance);
-		myRemotePlayers.push_back(remoteInstance);
-		remoteInstance.name = "Player#" + str(id);
-		print("Created " + remoteInstance.name); 
-		
-	print("Other players loaded. Player amount: " + str(idsAsStrings.size()));
-	return;
-
-@rpc("authority")
-func CRemovePlayer(id):
-	var oldplayer = get_parent().get_node("Player#" + str(id));
-	myRemotePlayers.erase(oldplayer);
-	oldplayer.queue_free();
-	print ("Player#" + str(id) + " left, so we destroyed him.");
-	return;
-
-@rpc("authority")
-func DUpdateRemotePlayer(id, playertransform, cameratransform):
-	#print("d update message from server!");
-	if (id == myID):
-		return;
-		
-	var remotePlayer = get_parent().get_node_or_null("Player#" + str(id));
-	if(remotePlayer == null || playertransform == null || cameratransform == null):
-		return;
-	
-	#print(playertransform.origin);
-	var cameraLookAtTransform = cameratransform;# cameratransform.rotated(playertransform.
-	var cameraForward = cameraLookAtTransform.basis.z;
-	cameraForward.y = 0;
-	cameraForward = cameraForward.normalized();
-	var cameraPosition = playertransform.origin + cameratransform.origin;
-	var cameraLookAt = cameraPosition + cameraForward;
-	
-	#print(cameraLookAtTransform);
-	var skeletalMesh = remotePlayer.get_node("SK_AnimatedMesh/SM_Robot");
-	#skeletalMesh.set_bone_pose(skeletalMesh.find_bone("Head"), cameratransform);
-	remotePlayer.look_at_from_position(playertransform.origin, playertransform.origin + cameraLookAt - cameraPosition, Vector3(0,1,0));
-	return;
-
-@rpc("authority")
-func ECreateEnemy(id):
-	var newEnemy = myEnemyCutterBotTemplate.instantiate();
-	newEnemy.set_name("Enemy" + str(id));
-	myEnemies[id] = newEnemy;
-	get_parent().add_child(newEnemy);
-	print ("Created enemy! ID: " + str(id));
-	return;
-
-@rpc("authority")
-func FEnemyKill(id):
-	get_parent().remove_child(myEnemies[id]);
-	myEnemies[id].queue_free();
-	myEnemies.erase(id);
-	print("Enemy destroyed! Maybe we will receive a reward?");
-	return;
-
-@rpc("authority")
-func GUpdateEnemy(id, transform):
-	# enemy might still be getting spawned in from the server.
-	if (!myEnemies.has(id)):
-		return;
-	
-	#print (" Enemy: Got update from server: " + str(id) + " " + str(transform));
-	myEnemies[id].position = transform.origin;
-	#if (id == 1):
-	#	myEnemies[id].transform = myEnemies[id].transform.scaled(Vector3(0.5,0.5,0.5));
-	return;
-	
-@rpc("authority")
-func HReceiveObjective(state, type, aname, location):
-	myLocalPlayer.myObjective.myState = state;
-	myLocalPlayer.myObjective.myType = type;
-	myLocalPlayer.myObjective.myName = aname;
-	myLocalPlayer.myObjective.myLocation = location;
-	myObjectiveMarker = myObjectiveMarkerTemplate.instantiate();
-	get_parent().add_child(myObjectiveMarker);
-	myObjectiveMarker.transform.origin.x = location.x;
-	myObjectiveMarker.transform.origin.z = location.y;
-	print("Received objective confirmation.");
-	return;
-
-@rpc("authority")
-func IObjectiveRewards():
-	# Rewards go here.
-	myObjectiveMarker.queue_free();
-	myLocalPlayer.myObjective = Quest.new();
-	print("Received reward, completed objective.");
-	return;
-
-# Requestable output events below.
-func ZHandlebjectiveRequest():
-	return;
-
-func YHandleObjectiveCompletion():
-	return;
-
-func SendObjectiveRequest():
-	if (myConnectionStatus == MultiplayerPeer.CONNECTION_CONNECTED):
-	#	rpc_id(1, "ZHandlebjectiveRequest");
-		print("Requested objective...");
-	return;
-
-func SendObjectiveCompletion():
-	if (myConnectionStatus == MultiplayerPeer.CONNECTION_CONNECTED):
-		print("Requesting objective rewards...");
-	#	rpc_id(1, "YHandleObjectiveCompletion");
-		myLocalPlayer.myObjective.myState = Quest.ObjectiveState.Submitted;
-	return;
-
-# Unspecified Package Handling:
-@rpc("authority")
-func PeerPacket(_id, packet):
-	var command = packet.get_string_from_ascii();
-	print(command);
 	return;

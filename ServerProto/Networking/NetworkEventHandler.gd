@@ -8,15 +8,45 @@ var myEnemyCutterBotTemplate = preload("res://Enemies/EnemyCutterBot.tscn");
 
 @onready var myServer = get_parent();  
 
-@rpc("reliable") func ACreatePlayer(): return;
-@rpc("reliable") func BCreateAllPlayers():return;
-@rpc("reliable") func CRemovePlayer(): return;
-@rpc("unreliable") func DUpdateRemotePlayer(): return;
-@rpc("unreliable") func ECreateEnemy(): return;
-@rpc("reliable") func FEnemyKill(id): return;
-@rpc("reliable") func GUpdateEnemy(): return;
-@rpc("reliable") func HReceiveObjective(): return;
-@rpc("reliable") func IObjectiveRewards(): return;
+# KEEP IN SYNC WITH NetworkEventHandler.gd ON THE CLIENT PROJECT!
+# Order and function names need to be IDENTICAL!
+@rpc("reliable") func RPC_CreatePlayer(): return;
+@rpc("reliable") func RPC_CreateAllPlayers():return;
+@rpc("reliable") func RPC_RemovePlayer(): return;
+@rpc("unreliable") func RPC_UpdateRemotePlayer(): return;
+@rpc("unreliable") func RPC_CreateEnemy(): return;
+@rpc("reliable") func RPC_EnemyKill(id): return;
+@rpc("reliable") func RPC_UpdateEnemy(): return;
+@rpc("reliable") func RPC_ReceiveObjective(): return;
+@rpc("reliable") func RPC_ObjectiveRewards(): return;
+
+# Received requests from Clients
+@rpc func RPC_HandleObjectiveRequest():
+	var senderID = get_tree().get_multiplayer().get_remote_sender_id();
+	var player = myPlayers.get(senderID);
+	if (player == null):
+		return;
+	myServer.myDebugLog += "Received objective request from " + player.name + "\n";
+	if (player.myObjective.myState != Quest.ObjectiveState.Empty):
+		return;
+	CreateObjective(senderID);
+	return;
+
+@rpc func RPC_HandleObjectiveCompletion():
+	var senderID = get_tree().get_multiplayer().get_remote_sender_id();
+	var player = myPlayers.get(senderID);
+	if (player == null):
+		return;
+	myServer.myQuestManager.VerifyCompletion(player);
+	myServer.myDebugLog += "Received objective reward." + player.name + "\n";	
+	return;
+
+#func GetDamage(ID, damage):
+#	ID;
+#	damage;
+	#myHealth -= damage;
+	#rpc("SetHealth", health);
+#	return;
 
 func _ready():
 	CreateEnemy();
@@ -26,10 +56,10 @@ func _ready():
 func ConnectPeer(id):
 	var connectedPlayerKeysString = "";
 	for connectedPlayerID in myPlayers:
-		rpc_id(connectedPlayerID, "ACreatePlayer", id);
+		rpc_id(connectedPlayerID, "RPC_CreatePlayer", id);
 		connectedPlayerKeysString += str(connectedPlayerID) + "_";
 	
-	rpc_id(id, "BCreateAllPlayers", connectedPlayerKeysString);
+	rpc_id(id, "RPC_CreateAllPlayers", connectedPlayerKeysString);
 	CreatePlayer(id);
 	return;
 
@@ -37,7 +67,7 @@ func DisconnectPeer(id):
 	for connectedPlayerID in myPlayers:
 		if (connectedPlayerID == id):
 			continue;
-		rpc_id(connectedPlayerID, "CRemovePlayer", id);
+		rpc_id(connectedPlayerID, "RPC_RemovePlayer", id);
 	
 	RemovePlayer(id);
 	return;
@@ -45,10 +75,10 @@ func DisconnectPeer(id):
 func _physics_process(_delta):
 	for contactPlayerID in myPlayers:
 		for dataPlayerID in myPlayers:
-			rpc_id(contactPlayerID, "DUpdateRemotePlayer", dataPlayerID, myPlayers[dataPlayerID].transform, myPlayers[dataPlayerID].myCameraTransform);
+			rpc_id(contactPlayerID, "RPC_UpdateRemotePlayer", dataPlayerID, myPlayers[dataPlayerID].transform, myPlayers[dataPlayerID].myCameraTransform);
 			pass;
 		for enemyID in myEnemies:
-			rpc_id(contactPlayerID, "GUpdateEnemy", enemyID, myEnemies[enemyID].transform);
+			rpc_id(contactPlayerID, "RPC_UpdateEnemy", enemyID, myEnemies[enemyID].transform);
 			pass;
 	return;
 
@@ -60,7 +90,7 @@ func CreatePlayer(id):
 	myPlayers[id] = newPlayer;
 	newPlayer.id = id;
 	for enemyID in myEnemies:
-		rpc_id(id, "ECreateEnemy", enemyID);
+		rpc_id(id, "RPC_CreateEnemy", enemyID);
 		pass;
 	
 	myServer.myDebugLog += "Users now online: " + str(myPlayers.size());
@@ -91,7 +121,7 @@ func CreateEnemy(position = Vector3(0,0,0)):
 	return id;
 
 func KillEnemy(id):
-	rpc("FEnemyKill", id);
+	rpc("RPC_EnemyKill", id);
 	myServer.myQuestManager.OnEnemyKilled(id);
 	myServer.remove_child(myEnemies[id]);
 	myEnemies[id].queue_free();
@@ -110,40 +140,13 @@ func CreateObjective(id):
 			myServer.myQuestManager.CreateKillQuest(newQuest);
 	player.myObjective = newQuest;
 	myServer.myDebugLog += "Creating new objective for " + myPlayers[id].name + "\n";	
-	rpc_id(id, "HReceiveObjective", newQuest.myState, newQuest.myType, newQuest.myName, newQuest.myLocation);
+	rpc_id(id, "RPC_ReceiveObjective", newQuest.myState, newQuest.myType, newQuest.myName, newQuest.myLocation);
 	return;
 
 func GiveObjectiveReward(id):
 	var player = myServer.myNetworkEventHandler.myPlayers.get(id);
 	myServer.myDebugLog += "Player completed objective and has been sent a reward. \n";
 	player.myObjective = Quest.new();
-	rpc_id(id, "IObjectiveRewards");
+	rpc_id(id, "RPC_ObjectiveRewards");
 	return;
 
-# Received requests from Clients
-@rpc func ZHandleObjectiveRequest():
-	var senderID = get_tree().get_multiplayer().get_remote_sender_id();
-	var player = myPlayers.get(senderID);
-	if (player == null):
-		return;
-	myServer.myDebugLog += "Received objective request from " + player.name + "\n";
-	if (player.myObjective.myState != Quest.ObjectiveState.Empty):
-		return;
-	CreateObjective(senderID);
-	return;
-
-@rpc func YHandleObjectiveCompletion():
-	var senderID = get_tree().get_multiplayer().get_remote_sender_id();
-	var player = myPlayers.get(senderID);
-	if (player == null):
-		return;
-	myServer.myQuestManager.VerifyCompletion(player);
-	myServer.myDebugLog += "Received objective reward." + player.name + "\n";	
-	return;
-
-#func GetDamage(ID, damage):
-#	ID;
-#	damage;
-	#myHealth -= damage;
-	#rpc("SetHealth", health);
-#	return;

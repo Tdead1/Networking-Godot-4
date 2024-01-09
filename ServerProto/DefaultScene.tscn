@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://chkce80kniyxx"]
+[gd_scene load_steps=8 format=3 uid="uid://chkce80kniyxx"]
 
 [ext_resource type="PackedScene" path="res://Networking/NetworkEventHandler.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://Prefabs/Dev/1x1Cube.tscn" id="2"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://bfuj81lqirbrw" path="res://Prefabs/Terrain/Terrain.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://Prefabs/Terrain/Rocks/DesertRockTerrace.tscn" id="5"]
 [ext_resource type="PackedScene" path="res://Prefabs/Buildings/Lobby/LobbyGeometryScene.tscn" id="6"]
-[ext_resource type="Script" path="res://global.gd" id="8"]
 
 [sub_resource type="Environment" id="1"]
 background_mode = 3
@@ -17,7 +16,6 @@ ambient_light_energy = 0.1
 
 [node name="Root" type="WorldEnvironment"]
 environment = SubResource("1")
-script = ExtResource("8")
 
 [node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.933517, -0.358029, 0.0190319, 0.02789, 0.0195934, -0.999419, 0.357448, 0.933505, 0.0282762, -1.64079, 15.2468, 1.12044)

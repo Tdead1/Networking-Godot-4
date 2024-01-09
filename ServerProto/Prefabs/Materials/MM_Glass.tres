@@ -1,7 +1,10 @@
-[gd_resource type="StandardMaterial3D" format=2]
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://d3mvw1ip3a0dl"]
 
 [resource]
-flags_transparent = true
-albedo_color = Color( 0.815686, 0.960784, 1, 0.0941176 )
-metallic = 0.7
-roughness = 0.06
+transparency = 1
+albedo_color = Color(0.666667, 0.611765, 0.623529, 0.65098)
+metallic = 0.17
+metallic_specular = 0.58
+roughness = 0.32
+clearcoat_roughness = 0.41
+refraction_enabled = true

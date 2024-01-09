@@ -1,8 +1,8 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=2]
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://cwx2y0ysafdyl"]
 
-[ext_resource path="res://Prefabs/Terrain/Textures/T_Sand.jpg" type="Texture2D" id=1]
+[ext_resource type="Texture2D" uid="uid://c0mhicka38ack" path="res://Prefabs/Terrain/Textures/T_Sand.jpg" id="1_bucu4"]
 
 [resource]
-flags_world_triplanar = true
-albedo_texture = ExtResource( 1 )
+albedo_texture = ExtResource("1_bucu4")
 uv1_triplanar = true
+uv1_world_triplanar = true

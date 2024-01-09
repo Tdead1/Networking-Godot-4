@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://ci5wfcwa4dwq0"
-path="res://.godot/imported/Lobby.dae-62685d9e938395b9682b33945ed1c4d4.scn"
+uid="uid://gujskgeb1hek"
+path="res://.godot/imported/ObjectiveBoard.glb-4b7c77116036dd15129cdd3da4336994.scn"
 
 [deps]
 
-source_file="res://Prefabs/Buildings/Lobby/Lobby.dae"
-dest_files=["res://.godot/imported/Lobby.dae-62685d9e938395b9682b33945ed1c4d4.scn"]
+source_file="res://Prefabs/Objects/ObjectiveBoard.glb"
+dest_files=["res://.godot/imported/ObjectiveBoard.glb-4b7c77116036dd15129cdd3da4336994.scn"]
 
 [params]
 
@@ -22,9 +22,13 @@ meshes/generate_lods=true
 meshes/create_shadow_meshes=true
 meshes/light_baking=0
 meshes/lightmap_texel_size=0.1
+meshes/force_disable_compression=false
 skins/use_named_skins=true
 animation/import=true
 animation/fps=15
 animation/trimming=false
+animation/remove_immutable_tracks=true
 import_script/path=""
 _subresources={}
+gltf/naming_version=0
+gltf/embedded_image_handling=1
