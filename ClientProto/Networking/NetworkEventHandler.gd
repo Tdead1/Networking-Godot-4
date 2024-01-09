@@ -9,7 +9,7 @@ const myReplyTimeout = 5.0;
 var myConnectTimer = 0.0;
 
 var myRemotePlayerScene = preload("res://Player/Remote/RemotePlayerInstance.tscn");
-var myEnemyCutterBotTemplate = preload("res://Prefabs/Enemies/EnemyCutterBot.tscn");
+var myEnemyCutterBotTemplate = preload("res://Prefabs/Enemies/CutterBot/EnemyCutterBot.tscn");
 var myObjectiveMarkerTemplate = preload("res://Prefabs/Objects/ObjectiveMarker.tscn");
 var myRemotePlayers = [];
 var myEnemies = {};
