@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://ccx4f5pivtkhf"]
+[gd_scene load_steps=11 format=3 uid="uid://ccx4f5pivtkhf"]
 
-[ext_resource type="Texture2D" uid="uid://cnwhgdmng8x76" path="res://Prefabs/Enemies/AssaultShip/AssaultShip_metal-non-seamless.png" id="1_3vynk"]
+[ext_resource type="Texture2D" uid="uid://codg16bwysgiv" path="res://Prefabs/Dev/T_Default.png" id="1_3vynk"]
+[ext_resource type="Script" path="res://Prefabs/Enemies/AssaultShip/EnemyAssaultShip.gd" id="1_klcjn"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ewcr7"]
 resource_name = "Material"
@@ -113,17 +114,19 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_mcj55")
 
 [node name="AssaultShip" type="Node3D"]
+script = ExtResource("1_klcjn")
 
 [node name="Ship" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
 mesh = SubResource("ArrayMesh_mp6lh")
 skeleton = NodePath("")
 
-[node name="GunR" type="MeshInstance3D" parent="."]
+[node name="GunR" type="MeshInstance3D" parent="Ship"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.54366, 2.01064, -2.81062)
 mesh = SubResource("ArrayMesh_rkuca")
 skeleton = NodePath("")
 
-[node name="GunL" type="MeshInstance3D" parent="."]
+[node name="GunL" type="MeshInstance3D" parent="Ship"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.54366, 2.01064, 2.78311)
 mesh = SubResource("ArrayMesh_p3vm6")
 skeleton = NodePath("")
