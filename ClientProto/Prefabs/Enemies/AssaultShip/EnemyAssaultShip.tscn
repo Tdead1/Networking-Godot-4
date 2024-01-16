@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://ccx4f5pivtkhf"]
+[gd_scene load_steps=19 format=3 uid="uid://ccx4f5pivtkhf"]
 
 [ext_resource type="Texture2D" uid="uid://codg16bwysgiv" path="res://Prefabs/Dev/T_Default.png" id="1_3vynk"]
 [ext_resource type="Script" path="res://Prefabs/Enemies/AssaultShip/EnemyAssaultShip.gd" id="1_klcjn"]
-[ext_resource type="Material" uid="uid://ckf2q1xwvjmcd" path="res://Prefabs/Materials/MM_Glass.tres" id="3_c1equ"]
+[ext_resource type="Material" uid="uid://dplsjv34isefj" path="res://Prefabs/Materials/MM_Metal.material" id="3_4tb5a"]
+[ext_resource type="Material" path="res://Prefabs/Materials/MM_RedBasic.tres" id="4_p1uja"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ewcr7"]
 resource_name = "Material"
@@ -82,6 +83,19 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_x4h0m")
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_2lncm"]
+particle_flag_align_y = true
+angle_min = 1.07288e-05
+angle_max = 1.07288e-05
+inherit_velocity_ratio = 0.311
+initial_velocity_min = 5.0
+initial_velocity_max = 30.0
+scale_min = 0.1
+scale_max = 0.5
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2xr7k"]
+material = ExtResource("4_p1uja")
+
 [sub_resource type="ArrayMesh" id="ArrayMesh_mcj55"]
 _surfaces = [{
 "aabb": AABB(-2.36483, -0.485057, -0.485057, 2.84989, 0.970113, 0.970113),
@@ -114,6 +128,23 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_mcj55")
 
+[sub_resource type="Curve" id="Curve_l5cq6"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.508257, 0.798109), 0.0, 0.0, 0, 0, Vector2(0.697248, 0.741053), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="CurveTexture" id="CurveTexture_7pvp4"]
+curve = SubResource("Curve_l5cq6")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_kosfv"]
+lifetime_randomness = 0.18
+particle_flag_damping_as_friction = true
+spread = 0.0
+initial_velocity_max = 1.72
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTexture_7pvp4")
+
+[sub_resource type="PrismMesh" id="PrismMesh_h8a6n"]
+
 [node name="AssaultShip" type="Node3D"]
 script = ExtResource("1_klcjn")
 
@@ -121,14 +152,56 @@ script = ExtResource("1_klcjn")
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
 mesh = SubResource("ArrayMesh_mp6lh")
 skeleton = NodePath("")
-surface_material_override/0 = ExtResource("3_c1equ")
+surface_material_override/0 = ExtResource("3_4tb5a")
 
 [node name="GunR" type="MeshInstance3D" parent="Ship"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.54366, 2.01064, -2.81062)
 mesh = SubResource("ArrayMesh_rkuca")
 skeleton = NodePath("")
 
+[node name="MuzzleFlare" type="GPUParticles3D" parent="Ship/GunR"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -2.56301, -0.0060904, 0.0271978)
+lifetime = 0.05
+interp_to_end = 0.35
+preprocess = 0.5
+explosiveness = 0.6
+visibility_aabb = AABB(-0.237423, -0.173537, -0.207046, 0.474845, 0.347075, 0.414092)
+trail_lifetime = 1.06
+process_material = SubResource("ParticleProcessMaterial_2lncm")
+draw_pass_1 = SubResource("PlaneMesh_2xr7k")
+
 [node name="GunL" type="MeshInstance3D" parent="Ship"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.54366, 2.01064, 2.78311)
 mesh = SubResource("ArrayMesh_p3vm6")
 skeleton = NodePath("")
+
+[node name="MuzzleFlare" type="GPUParticles3D" parent="Ship/GunL"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -2.56301, -0.0060904, 0.0271978)
+lifetime = 0.05
+interp_to_end = 0.35
+preprocess = 0.5
+explosiveness = 0.6
+visibility_aabb = AABB(-0.237423, -0.173537, -0.207046, 0.474845, 0.347075, 0.414092)
+trail_lifetime = 1.06
+process_material = SubResource("ParticleProcessMaterial_2lncm")
+draw_pass_1 = SubResource("PlaneMesh_2xr7k")
+
+[node name="TrailL" type="GPUParticles3D" parent="Ship"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 2.54163, 0.762838)
+visibility_range_end = 2048.0
+visibility_range_end_margin = 1024.0
+amount = 40
+lifetime = 2.0
+visibility_aabb = AABB(-200, -200, -200, 400, 400, 400)
+process_material = SubResource("ParticleProcessMaterial_kosfv")
+draw_pass_1 = SubResource("PrismMesh_h8a6n")
+
+[node name="TrailR" type="GPUParticles3D" parent="Ship"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 2.54163, -0.522659)
+visibility_range_end = 2048.0
+visibility_range_end_margin = 1024.0
+amount = 40
+lifetime = 2.0
+visibility_aabb = AABB(-200, -200, -200, 400, 400, 400)
+process_material = SubResource("ParticleProcessMaterial_kosfv")
+draw_pass_1 = SubResource("PrismMesh_h8a6n")

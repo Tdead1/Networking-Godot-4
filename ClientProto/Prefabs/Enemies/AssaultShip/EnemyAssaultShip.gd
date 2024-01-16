@@ -13,8 +13,10 @@ var myFlightSpeed = 50; #(m/s)
 var myPreviousFlightDir = Vector3(0,0,0);
 var myElapsedTime = 0.0;
 var myIsTargetingPlayer = false;
-@onready var myGunR = get_node("Ship/GunR"); 
-@onready var myGunL = get_node("Ship/GunL"); 
+@onready var myGunR = $Ship/GunR;
+@onready var myGunL = $Ship/GunL; #get_node("Ship/GunL"); 
+@onready var myMuzzleFlare = [$Ship/GunR/MuzzleFlare, $Ship/GunL/MuzzleFlare];
+@onready var myTrails = [$Ship/TrailL,$Ship/TrailR];
 
 func _ready():
 	myPreviousPosition = global_position;
@@ -61,6 +63,8 @@ func _process(delta):
 	
 	myPreviousPosition = global_position;
 	myPreviousFlightDir = flightDir;
+	myMuzzleFlare[0].emitting = myIsTargetingPlayer;
+	myMuzzleFlare[1].emitting = myIsTargetingPlayer;
 
 func generate_flight_target():
 	var flightHeightVariation = randf_range(-myFlightTargetDistanceRange * 0.04, myFlightTargetDistanceRange *  0.04);
