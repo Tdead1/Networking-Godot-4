@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://c8t44ryxewlpm"]
+[gd_scene load_steps=12 format=3 uid="uid://c8t44ryxewlpm"]
 
 [ext_resource type="Script" path="res://Player/Logic/PlayerPawn.gd" id="1"]
 [ext_resource type="PackedScene" path="res://Player/SubScenes/PlayerMesh.tscn" id="2"]
@@ -6,6 +6,17 @@
 [ext_resource type="PackedScene" uid="uid://bjo1r8e0p8xm2" path="res://Player/Visuals/SM_Rifle.glb" id="4"]
 [ext_resource type="Script" path="res://Player/Logic/PlayerShooting.gd" id="5"]
 [ext_resource type="PackedScene" uid="uid://tke28ybd72we" path="res://Player/UI/HUD.tscn" id="6"]
+[ext_resource type="Shader" path="res://Player/PostProcessing.gdshader" id="7_leqt8"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_eqmbd"]
+render_priority = 0
+shader = ExtResource("7_leqt8")
+
+[sub_resource type="QuadMesh" id="QuadMesh_b6dr6"]
+material = SubResource("ShaderMaterial_eqmbd")
+custom_aabb = AABB(-500000, -500000, -500000, 1e+06, 1e+06, 1e+06)
+flip_faces = true
+size = Vector2(2, 2)
 
 [sub_resource type="CapsuleShape3D" id="1"]
 margin = 0.001
@@ -32,6 +43,12 @@ collision_mask = 2
 script = ExtResource("5")
 
 [node name="HUD" parent="PlayerCamera" instance=ExtResource("6")]
+
+[node name="PostProcessor" type="MeshInstance3D" parent="PlayerCamera"]
+visible = false
+custom_aabb = AABB(-500000, -500000, -500000, 1e+06, 1e+06, 1e+06)
+gi_mode = 0
+mesh = SubResource("QuadMesh_b6dr6")
 
 [node name="PhysicsCollisionShape" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)

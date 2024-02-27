@@ -1,0 +1,18 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://cqbmh0e1jcowj"]
+
+[sub_resource type="Shader" id="Shader_rhqcy"]
+code = "// NOTE: Shader automatically converted from Godot Engine 4.3.dev's StandardMaterial3D.
+
+shader_type spatial;
+render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlick_ggx;
+uniform vec4 albedo : source_color;
+
+void fragment() {
+	ALBEDO = albedo.rgb;
+}
+"
+
+[resource]
+render_priority = 0
+shader = SubResource("Shader_rhqcy")
+shader_parameter/albedo = Color(0.387812, 0.411719, 0.53125, 1)

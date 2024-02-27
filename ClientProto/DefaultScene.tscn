@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://chkce80kniyxx"]
+[gd_scene load_steps=16 format=3 uid="uid://chkce80kniyxx"]
 
 [ext_resource type="PackedScene" path="res://Networking/NetworkEventHandler.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://dxvyrk6p27rla" path="res://Prefabs/Dev/1x1Cube.tscn" id="2"]
@@ -9,6 +9,8 @@
 [ext_resource type="Script" path="res://global.gd" id="8"]
 [ext_resource type="PackedScene" uid="uid://14roe8o5ea3x" path="res://Prefabs/Buildings/Lobby/Lobby.tscn" id="8_xgkmm"]
 [ext_resource type="PackedScene" uid="uid://ccx4f5pivtkhf" path="res://Prefabs/Enemies/AssaultShip/EnemyAssaultShip.tscn" id="9_4e65a"]
+[ext_resource type="PackedScene" uid="uid://sq0u7nvf3mxq" path="res://Prefabs/Buildings/Factory/Factory.tscn" id="10_5ldtn"]
+[ext_resource type="Material" uid="uid://cfq31bu6frfnu" path="res://Prefabs/Materials/MM_Water.tres" id="12_dw3w4"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_onwxq"]
 sky_top_color = Color(0.0999549, 0.195053, 0.55, 1)
@@ -37,6 +39,12 @@ volumetric_fog_length = 206.37
 volumetric_fog_sky_affect = 0.43
 adjustment_enabled = true
 adjustment_saturation = 1.3
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_bo3i5"]
+material = ExtResource("12_dw3w4")
+size = Vector2(10, 10)
+subdivide_width = 32
+subdivide_depth = 32
 
 [node name="Root" type="WorldEnvironment"]
 environment = SubResource("1")
@@ -74,8 +82,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.68885, -0.48001, -5.26427)
 [node name="PlayerPawn" parent="." instance=ExtResource("3")]
 transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 6.08691, -1.90735e-06, 12.5919)
 
-[node name="Node3D" parent="." instance=ExtResource("4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+[node name="Floor" parent="." instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.969528, -1.09856, -1.04047)
 
 [node name="DesertRockTerrace" parent="." instance=ExtResource("5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.4974, 5.09871, -5.20384)
@@ -99,7 +107,13 @@ transform = Transform3D(-0.482361, -0.263267, 0.835475, -0.131633, 0.964723, 0.2
 transform = Transform3D(0.657787, 0.0213932, -0.7529, 0.02808, 0.998205, 0.0528961, 0.752681, -0.0559358, 0.656005, 32.5904, 8.05738, 52.5652)
 
 [node name="DesertRockTerrace8" parent="." instance=ExtResource("5")]
-transform = Transform3D(-0.126884, 0, -0.991918, 0, 1, 0, 0.991918, 0, -0.126884, -9.94929, -5.17171, 5.3934)
+transform = Transform3D(-0.126884, 0, -0.991918, 0, 1, 0, 0.991918, 0, -0.126884, -9.94929, -4.09704, 5.3934)
+
+[node name="DesertRockTerrace8" parent="DesertRockTerrace8" instance=ExtResource("5")]
+transform = Transform3D(-0.260917, 0, 0.148062, 0, 0.3, 0, -0.148062, 0, -0.260917, -9.2077, 2.60445, -5.8837)
+
+[node name="DesertRockTerrace9" parent="DesertRockTerrace8" instance=ExtResource("5")]
+transform = Transform3D(0.157474, 0, -0.255347, 0, 0.3, 0, 0.255347, 0, 0.157474, -13.9825, 2.72713, -7.11291)
 
 [node name="DesertRockTerrace2" parent="." instance=ExtResource("5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.1343, 1.33789, -14.4823)
@@ -127,3 +141,10 @@ transform = Transform3D(0.932935, 0, 0.360046, 0, 1, 0, -0.360046, 0, 0.932935, 
 
 [node name="AssaultShip" parent="." instance=ExtResource("9_4e65a")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.99649, 18.8949, 34.8822)
+
+[node name="Factory" parent="." instance=ExtResource("10_5ldtn")]
+transform = Transform3D(-0.961693, 0, -0.274127, 0, 1, 0, 0.274127, 0, -0.961693, -77.0472, -1, -88.5605)
+
+[node name="Water" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.686991, 0, 0.989802, 0, 1, 0, -0.900663, 0, 0.754983, -7.46509, -1.01298, -7.19242)
+mesh = SubResource("PlaneMesh_bo3i5")

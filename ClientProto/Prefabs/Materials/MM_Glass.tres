@@ -2,6 +2,7 @@
 
 [resource]
 transparency = 1
-albedo_color = Color(0.666667, 0.611765, 0.623529, 0.65098)
+cull_mode = 2
+depth_draw_mode = 1
 roughness = 0.33
 clearcoat_roughness = 0.41

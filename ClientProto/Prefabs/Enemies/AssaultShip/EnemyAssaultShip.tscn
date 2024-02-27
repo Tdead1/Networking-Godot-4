@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://codg16bwysgiv" path="res://Prefabs/Dev/T_Default.png" id="1_3vynk"]
 [ext_resource type="Script" path="res://Prefabs/Enemies/AssaultShip/EnemyAssaultShip.gd" id="1_klcjn"]
 [ext_resource type="Material" uid="uid://dplsjv34isefj" path="res://Prefabs/Materials/MM_Metal.material" id="3_4tb5a"]
-[ext_resource type="Material" path="res://Prefabs/Materials/MM_RedBasic.tres" id="4_p1uja"]
+[ext_resource type="Material" uid="uid://dcfh026wx5hbh" path="res://Prefabs/Materials/MM_RedBasic.tres" id="4_p1uja"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ewcr7"]
 resource_name = "Material"
