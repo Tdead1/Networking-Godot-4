@@ -35,18 +35,20 @@ func RPC_CreatePlayer(id):
 @rpc("authority")
 func RPC_CreateAllPlayers(idsString):
 	print("Create players was called from the server!"); 
-	var idsAsStrings = idsString.split("_");
-	for idString in idsAsStrings:
-		var id = int(idString);
-		if(id == myID):
-			continue;
-		var remoteInstance = myRemotePlayerScene.instantiate();
-		get_parent().add_child(remoteInstance);
-		myRemotePlayers.push_back(remoteInstance);
-		remoteInstance.name = "Player#" + str(id);
-		print("Created " + remoteInstance.name); 
-		
-	print("Other players loaded. Player amount: " + str(idsAsStrings.size()));
+	if !idsString.is_empty():
+		var idsAsStrings = idsString.split("_");
+		for idString in idsAsStrings:
+			var id = int(idString);
+			if(id == myID || id == 0):
+				continue;
+			var remoteInstance = myRemotePlayerScene.instantiate();
+			get_parent().add_child(remoteInstance);
+			myRemotePlayers.push_back(remoteInstance);
+			remoteInstance.name = "Player#" + str(id);
+			print("Created " + remoteInstance.name); 
+		print("Other players loaded. Player amount: " + str(idsAsStrings.size()));
+	else:
+		print("No other players online.");
 	return;
 
 @rpc("authority")
@@ -59,26 +61,19 @@ func RPC_RemovePlayer(id):
 
 @rpc("authority")
 func RPC_UpdateRemotePlayer(id, playertransform, cameratransform):
-	#print("d update message from server!");
-	if (id == myID):
-		return;
-		
 	var remotePlayer = get_parent().get_node_or_null("Player#" + str(id));
-	if(remotePlayer == null || playertransform == null || cameratransform == null):
+	if (remotePlayer == null || playertransform == null || cameratransform == null):
 		return;
 	
-	#print(playertransform.origin);
-	var cameraLookAtTransform = cameratransform;# cameratransform.rotated(playertransform.
-	var cameraForward = cameraLookAtTransform.basis.z;
-	cameraForward.y = 0;
-	cameraForward = cameraForward.normalized();
-	var cameraPosition = playertransform.origin + cameratransform.origin;
-	var cameraLookAt = cameraPosition + cameraForward;
-	
-	#print(cameraLookAtTransform);
-	var skeletalMesh = remotePlayer.get_node("SK_AnimatedMesh/SM_Robot");
-	#skeletalMesh.set_bone_pose(skeletalMesh.find_bone("Head"), cameratransform);
-	remotePlayer.look_at_from_position(playertransform.origin, playertransform.origin + cameraLookAt - cameraPosition, Vector3(0,1,0));
+	remotePlayer.transform = playertransform;
+	#var headTransform = Transform3D.IDENTITY;
+	#headTransform.basis = headTransform.basis.slerp(cameratransform.basis, 1.0);
+	#var rootboneTransform = Transform3D.IDENTITY;
+	#rootboneTransform = rootboneTransform.looking_at(Vector3(playertransform.origin.x + remotePlayer.forward.x, playertransform.origin.y, playertransform.origin.z + remotePlayer.forward.y));
+	#remotePlayer.skeletalMesh.set_bone_pose_rotation(remotePlayer.rootbone, rootboneTransform.basis);
+	#remotePlayer.skeletalMesh.set_bone_pose_rotation(remotePlayer.neckbone, rootboneTransform.basis.inverse() * headTransform.basis);
+	#remotePlayer.skeletalMesh.set_bone_pose_rotation(remotePlayer.rootbone, remotePlayer.skeletalMesh.get_bone_pose_rotation(remotePlayer.rootbone).slerp(cameratransform.basis, 1.0));
+	remotePlayer.skeletalMesh.set_bone_pose_rotation(remotePlayer.neckbone, remotePlayer.skeletalMesh.get_bone_pose_rotation(remotePlayer.neckbone).slerp(cameratransform.basis, 1.0));
 	return;
 
 @rpc("authority")

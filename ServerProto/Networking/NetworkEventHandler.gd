@@ -49,7 +49,7 @@ var myEnemyCutterBotTemplate = preload("res://Enemies/EnemyCutterBot.tscn");
 #	return;
 
 func _ready():
-	CreateEnemy();
+	#CreateEnemy();
 	#CreateEnemy();	
 	return;
 	
@@ -75,8 +75,9 @@ func DisconnectPeer(id):
 func _physics_process(_delta):
 	for contactPlayerID in myPlayers:
 		for dataPlayerID in myPlayers:
+			if (contactPlayerID == dataPlayerID):
+				continue;
 			rpc_id(contactPlayerID, "RPC_UpdateRemotePlayer", dataPlayerID, myPlayers[dataPlayerID].transform, myPlayers[dataPlayerID].myCameraTransform);
-			pass;
 		for enemyID in myEnemies:
 			rpc_id(contactPlayerID, "RPC_UpdateEnemy", enemyID, myEnemies[enemyID].transform);
 			pass;

@@ -45,6 +45,10 @@ func _process(_delta):
 		myMoveInput.z += 1;
 	if(myMoveInput.length() > 0):
 		myMoveInput = myMoveInput.normalized();
+	if(Input.is_key_pressed(KEY_INSERT)):
+		myGravity = 0.0;
+	if(Input.is_key_pressed(KEY_HOME)):
+		myGravity = 0.8;
 	if(Input.is_action_just_pressed("Disconnect")):
 		print("Disconnecting from server.");
 		get_tree().set_multiplayer_peer(null);
